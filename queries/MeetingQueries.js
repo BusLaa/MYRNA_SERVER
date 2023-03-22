@@ -63,6 +63,9 @@ const getChiefByMeetingId = async (meeting_id) =>{
 const getAllMeetingMessages = async (meeting_id) => {
     return await getMany (pool, `SELECT * FROM meeting_msg WHERE meeting_id = ${meeting_id}`)
 }
+const getAllMessageCreator = async (message_id) => {
+    return await getMany (pool, `SELECT * FROM users WHERE id = (SELECT author FROM meeting_msg WHERE id = ${message_id})`)
+}
 
 module.exports = {
     getAllMeetings,

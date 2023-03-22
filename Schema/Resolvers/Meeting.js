@@ -137,7 +137,7 @@ const MeetingResolvers = {
     },
     MeetingMessage:{
         author: async (msg) =>{
-            return UserQueries.getUserById(msg.author.id)
+            return MeetingQueries.getMeetingCreator(msg.id)
         }
     }
 }
