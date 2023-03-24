@@ -10,7 +10,16 @@ const defineData = (seq) => {
         email :{
             type : DataTypes.STRING,
             allowNull: false,
-            unique: true
+            unique: true,
+            validate: {
+                isEmail: true,
+                notNull: true,
+                isTooLong(value){
+                    if (typeof value === 'string' && value.length > 50){
+                        throw new Error("Email is too long")
+                    }
+                }
+            }
         },
         hashedPassword :{
             type : DataTypes.STRING(16).BINARY,
@@ -22,11 +31,25 @@ const defineData = (seq) => {
         },
         firstName :{
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: false,
+            validate: {
+                isLongEnough(value){
+                    if (typeof value === 'string' && value.length < 8){
+                        throw new Error("first name is too short")
+                    }
+                }
+            }
         },
         lastName :{
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: false,
+            validate: {
+                isLongEnough(value){
+                    if (typeof value === 'string' && value.length < 8){
+                        throw new Error("last name is too short")
+                    }
+                }
+            }
         },
         location :{
             type : DataTypes.STRING

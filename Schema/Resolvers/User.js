@@ -6,6 +6,8 @@ const PostQueries = require('../../queries/PostQueries')
 const MeetingQueries = require('../../queries/MeetingQueries')
 const LocationQueries = require('../../queries/LocationQueries');
 
+const {sequelize} = require("../../connector");
+
 const getUserRoles = async (user_id) =>{
     const resp = await UserQueries.getAllUserRoles(user_id)
     const roles = [];
@@ -43,45 +45,39 @@ const UserResolvers = {
     },
     Mutation: {
         signup: async (_,{email, first_name, last_name,password, location_id, birthday}) => {
-            if (email.length > 50){
-                throw Error('Email is too long')
-            }
-            if (! /^[a-zA-Z0-9.!#$%&’*+\=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(email)){
-                throw Error('Invalid Email')
-            }
+
+            const User = sequelize.models.User;
+
+
             if (password.length <= 8){
                 throw Error('Password too short')
             }
-            if (first_name.length > 40){
-                throw Error('First name is too long')
-            }
-            if (last_name.length > 40){
-                throw Error('Last name is too long')
-            }           
+            
+            const res = await User.findOne({where: {email: email}})
 
-            let res = await UserQueries.getUsersByEmail(email);
-            if (res.length > 0){
+            if (res !== null){
                 throw Error("This email already exists");
             } 
 
-            let [stringKey, salt] = await passwordGenerator.generateHashedPasswordAndSalt(password);
-            try{
-                
-                await UserQueries.insertUser(email, stringKey, salt, first_name, last_name ,location_id, birthday)
+            let [hashed_password, salt] = await passwordGenerator.generateHashedPasswordAndSalt(password);
+            //const createdUser = 
+            return User.create({
+                email: email,
+                hashedPassword: hashed_password,
+                salt: salt,
+                firstName: first_name,
+                lastName: last_name,
+                location: location_id,
+                birthday: birthday
+            }).then((user) =>{
+                console.log(user)
+                const token = sign({"user": user}, process.env.SECRET_WORD)
+                const auth = {token: token, user: user }
 
-            } catch (err) {
-                console.log(err)
-            }
+                return auth
 
-            const user = await UserQueries.getLastInsertedUser()
+            })
             
-
-            user.roles = await getUserRoles(user.id);
-            const token = sign({"user": user}, process.env.SECRET_WORD)
-
-            
-            const auth = {token: token, user: user }
-            return auth
         },
         signin: async (_, { email, password }) => { 
             let user = await UserQueries.getUsersByEmail(email);
