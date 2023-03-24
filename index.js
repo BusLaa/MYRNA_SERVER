@@ -46,5 +46,3 @@ const startApolloServer = async (schema) => {
 }
 
 startApolloServer(schema);
-
-//imp
