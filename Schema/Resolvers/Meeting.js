@@ -136,9 +136,10 @@ const MeetingResolvers = {
         }
     },
     MeetingMessage:{
-        author: async (msg) =>{
-            return MeetingQueries.getMeetingCreator(msg.author)
+        author: async (msg) => {
+            return UserQueries.getUserById(msg.author)
         }
     }
+    
 }
 module.exports = {MeetingResolvers}
