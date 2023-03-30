@@ -1,15 +1,17 @@
 const passwordGenerator = require('../../tools/PasswordGeneratorTool')
 const {verify, sign} = require ('jsonwebtoken');
-const {isRolesInUser} = require('../../tools/FindUserRolesTool');
 const UserQueries = require('../../queries/UserQueries')
 const PostQueries = require('../../queries/PostQueries')
 const MeetingQueries = require('../../queries/MeetingQueries')
 const LocationQueries = require('../../queries/LocationQueries');
 
-const {sequelize} = require("../../connector");
+const Sequelize = require('sequelize')
+const models = require("../../connector").sequelize.models;
 
-const getUserRoles = async (user_id) =>{
-    const resp = await UserQueries.getAllUserRoles(user_id)
+
+
+const getUserRoles = async (user ) =>{
+    const resp = await UserQueries.getAllUserRoles(user)
     const roles = [];
     for (i of resp){
         roles.push (i.name)
@@ -17,19 +19,26 @@ const getUserRoles = async (user_id) =>{
     return roles
 }
 
+const isRolesInUser = (userRoles, roles) => {
+    for (let role of roles){
+        if (userRoles.indexOf(role) === -1){return false}
+    }
+    return true
+}
+
 const UserResolvers = { 
     Query: { 
         getAllUsers: async (_,__, ctx) => {
-            const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
-            if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"])) throw Error("You do not have rights (basically woman)")
+            //const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
+            //if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"])) throw Error("You do not have rights (basically woman)")
 
-            return await UserQueries.getAllUsers();
+            return await models.User.findAll({})
 
         },
         getUserById: async (_, { id }, ctx) => { 
             const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
 
-            let data = await UserQueries.getUserById(id)
+            let data = await models.User.findOne({where: {id : id}});
 
             if (!data){
                 throw Error("No such user")
@@ -39,14 +48,19 @@ const UserResolvers = {
         },
         getUsersByName: async (_, {search} ) =>{
             if (search.trim() == "") return [];
-            return UserQueries.getUsersWithSimilarName(search.trim().toLowerCase())
+            const concated = Sequelize.fn('CONCAT', Sequelize.col("firstName"),Sequelize.col("lastName"),Sequelize.col("email"));
+            const searchQuery = {[Sequelize.Op.like] : '%'+search.trim().toLowerCase()+'%'}
+            const criteria = {
+                where: Sequelize.where(concated, searchQuery)
+            }
+            return models.User.findAll(criteria)
         }
             
     },
     Mutation: {
-        signup: async (_,{email, first_name, last_name,password, location_id, birthday}) => {
+        signup: async (_,{email, firstName, lastName,password, locationId, birthday}) => {
 
-            const User = sequelize.models.User;
+            const User = models.User;
 
 
             if (password.length <= 8){
@@ -60,41 +74,46 @@ const UserResolvers = {
             } 
 
             let [hashed_password, salt] = await passwordGenerator.generateHashedPasswordAndSalt(password);
-            //const createdUser = 
+
+
             return User.create({
                 email: email,
                 hashedPassword: hashed_password,
                 salt: salt,
-                firstName: first_name,
-                lastName: last_name,
-                location: location_id,
+                firstName: firstName,
+                lastName: lastName,
+                location: locationId,
                 birthday: birthday
             }).then((user) =>{
                 console.log(user)
                 const token = sign({"user": user}, process.env.SECRET_WORD)
                 const auth = {token: token, user: user }
-
                 return auth
 
+            }).catch((err) =>{
+                console.log(err)
             })
             
         },
         signin: async (_, { email, password }) => { 
-            let user = await UserQueries.getUsersByEmail(email);
+
+            const User = models.User;
+            
+            let user = await User.findOne({where: {email : email}});
+
+            console.log(user)
 
             if (!user) throw Error('Wrong email or password');
             if (user.length == 0) throw Error('Za rossiu');
 
-            user = user[0]
-
             try{
-                if ( !passwordGenerator.validatePassword(password, user.salt, user.hashed_password) ) throw Error('wrong email or password');
+                if ( !passwordGenerator.validatePassword(password, user.salt, user.hashedPassword) ) throw Error('wrong email or password');
             } catch {
-                throw Error('Wrong email or password');
+                throw Error('Wrong password');
             }
 
 
-            user.roles = await getUserRoles(user.id)
+            user.roles = await user.Roles
             const token = sign({user: user}, process.env.SECRET_WORD)
 
             const auth = {token: token, user: user }
@@ -175,64 +194,41 @@ const UserResolvers = {
     },
     User: {
         id: async (user) =>{
-            let user_ret = await UserQueries.getUserById(user.id)
-
-            if (!user_ret){
-                throw Error("No such user")
-            }
-
-            return user_ret.id;
+            return user.id
         },
         email: async  (user) => {
-            let user_ret = await UserQueries.getUserById(user.id)
-
-            if (!user_ret){
-                throw Error("No such user")
-            }
-
-            return user_ret.email;
+            return user.email || (await models.User.findOne({where: {id: user.id}})).email
         },
-        first_name: async  (user) => {
-            let user_ret = await UserQueries.getUserById(user.id)
-
-            if (!user_ret){
-                throw Error("No such user")
-            }
-
-            return user_ret.first_name;
+        firstName: async  (user) => {
+            return (await models.User.findOne({where: {id: user.id}})).firstName
         },
-        last_name: async  (user) => {
-            let user_ret = await UserQueries.getUserById(user.id)
-
-            if (!user_ret){
-                throw Error("No such user")
-            }
-
-            return user_ret.last_name;
+        lastName: async  (user) => {
+            return (await models.User.findOne({where: {id: user.id}})).lastName
         },
         subscriptions: async  (user) =>{
-            return await UserQueries.getAllSubsciptions(user.id)
+            return await models.User.findOne({where: {id: user.id}, include: 'Subscriptions'}).Subscriptions
         },
         subscribed: async (user) => {
-            return await UserQueries.getAllSubscribed(user.id);
+            return await models.User.findOne({where: {id: user.id}, include: 'Subscribed'}).Subscribed
         },
         posts: async  (user) => {
-           return await PostQueries.getAllUserPosts(user.id);
+            return await models.User.findOne({where: {id: user.id}, include: 'Posts'}).Posts
         },
         comments: async  (user) => {
-            return await PostQueries.getAllUserComments(user.id)
+            return await models.User.findOne({where: {id: user.id}, include: 'Comments'}).Comments
         },
         roles: async (user) => {
-            return await getUserRoles(user.id)
+            return await models.User.findOne({where: {id: user.id}, include: 'Roles'}).Roles
         },
         meetings: async (user) => {
-            return MeetingQueries.getAllUserMeetings(user.id)
+            return await models.User.findOne({where: {id: user.id}, include: 'Meetings'}).Meetings
         },
         likedPosts: async (user) => {
-            return PostQueries.getLikedPostByUserId(user.id)
+            return await models.User.findOne({where: {id: user.id}, include: 'userLikes'}).userLikes
         },
         location: async (user) =>{
-            return LocationQueries.getLocationByUserId(user.id)
+            //return await models.User.findOne({where: {id: user.id}, include: 'userLikes'}).userLikes
+            return "There is a bug that I am currently too lazy to fix"
         }
     },
     

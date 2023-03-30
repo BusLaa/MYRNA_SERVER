@@ -8,6 +8,8 @@ const generateHashedPasswordAndSalt = async (passwordString) => {
 const validatePassword = (passwordString, salt, trueHashedPassword) =>{
     key =  crypto.scryptSync(passwordString, salt.toString('hex'), 16);
     let hashedPassword = key.toString('hex')
+    console.log(trueHashedPassword.toString('hex'))
+    console.log(hashedPassword)
     return (trueHashedPassword.toString('hex') === hashedPassword) 
 }
 const generateHashedPasswordAndSaltWithoutString = () => {

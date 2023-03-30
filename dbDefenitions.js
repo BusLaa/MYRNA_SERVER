@@ -22,11 +22,11 @@ const defineData = (seq) => {
             }
         },
         hashedPassword :{
-            type : DataTypes.STRING(16).BINARY,
+            type : DataTypes.STRING(32).BINARY,
             allowNull: false
         },
         salt :{
-            type : DataTypes.STRING(16).BINARY,
+            type : DataTypes.STRING(32).BINARY,
             allowNull: false
         },
         firstName :{
@@ -59,7 +59,7 @@ const defineData = (seq) => {
         },
         avatar: {
             type: DataTypes.INTEGER,
-            default: 5
+            defaultValue: 5
         }
     })
 
@@ -88,8 +88,8 @@ const defineData = (seq) => {
     //     models.User.belongsToMany(models.User, {through: 'UserSubscription' , foreignKey: 'userId', otherKey: 'subscribedId'})
     //   };
 
-    //User.belongsToMany(User, {as: 'Subscribed', through: 'UserSubscription', uniqueKey: "SubscribedId"})
-    User.belongsToMany(User, {as: 'Subscriptions', through: 'UserSubscription', uniqueKey: "UserId"})
+    User.belongsToMany(User, {as: 'Subscribed', through: 'UserSubscription'})
+    User.belongsToMany(User, {as: 'Subscriptions', through: 'UserSubscription'})
     
 
 
@@ -109,15 +109,15 @@ const defineData = (seq) => {
         },
         likes:{
             type: DataTypes.INTEGER,
-            default: 0
+            defaultValue: 0
         },
         deleted: {
             type: DataTypes.BOOLEAN,
-            default: false
+            defaultValue: false
         }
     })
 
-    Post.belongsTo(User, {foreignKey: 'AuthorId'})
+    Post.belongsTo(User, {foreignKey: 'AuthorId', as: 'UserPosts'})
 
     const Comment = seq.define('Comment', {
         id: {
@@ -180,8 +180,7 @@ const defineData = (seq) => {
         },
         typeId: {
             type: DataTypes.INTEGER,
-            status: DataTypes.STRING,
-            default: "upcoming"
+            //defaultValue: "upcoming"
         },
     })
 
@@ -259,7 +258,7 @@ const defineData = (seq) => {
         },
         rating:{
             type: DataTypes.DECIMAL(3,2),
-            default: 0
+            defaultValue: 0
         }
     })
 
@@ -290,6 +289,7 @@ const defineData = (seq) => {
 
     Rating.belongsTo(Place, {foreignKey: 'PlaceId'})
     Rating.belongsTo(User, {foreignKey: 'UserId'})
+
 
 
 

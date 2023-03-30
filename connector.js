@@ -32,7 +32,7 @@ sequelize.authenticate().then(() => {
 }).then(() =>{
   defineData(sequelize)
 }).then(() =>{
-  sequelize.sync();
+  sequelize.sync({alter: true});
   console.log("All models were synchronized successfully.");
 });
 
