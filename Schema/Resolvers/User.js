@@ -10,16 +10,14 @@ const models = require("../../connector").sequelize.models;
 
 
 
-const getUserRoles = async (user ) =>{
-    const resp = await UserQueries.getAllUserRoles(user)
-    const roles = [];
-    for (i of resp){
-        roles.push (i.name)
-    }
-    return roles
+const getUserRoles = async (userId ) =>{
+    const resp = await models.User.findOne({where: {id: userId}, include: 'Roles'}).then((resp) => resp.Roles)
+    return resp
 }
 
 const isRolesInUser = (userRoles, roles) => {
+    userRoles =  userRoles.map ((role) => role.name)
+    console.log(userRoles.indexOf("ADMIN"))
     for (let role of roles){
         if (userRoles.indexOf(role) === -1){return false}
     }
@@ -29,9 +27,13 @@ const isRolesInUser = (userRoles, roles) => {
 const UserResolvers = { 
     Query: { 
         getAllUsers: async (_,__, ctx) => {
-            //const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
-            //if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"])) throw Error("You do not have rights (basically woman)")
+            const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
 
+            if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"])) throw Error("You do not have rights (basically woman)")
+            
+
+            console.log((await models.User.findOne({where: {id: 1}, include: 'Roles'})).Roles)
+            //getUserRoles()
             return await models.User.findAll({})
 
         },
@@ -119,7 +121,7 @@ const UserResolvers = {
             const auth = {token: token, user: user }
             return auth
         },
-        changeUser: async(_, {user_id, email, password,  first_name, last_name, birthday, location}, ctx) =>{
+        changeUser: async(_, {userId, email, password,  firstName, lastName, birthday, location}, ctx) =>{
             const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
             if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"]) && user.id !== user_id ) throw Error("You do not have rights (basically woman)")
 
@@ -127,12 +129,13 @@ const UserResolvers = {
             if (password) {
                 [stringKey, salt] = await passwordGenerator.generateHashedPasswordAndSalt(password);
             }
+            const userToUpdate = await models.User.findOne({where : {id: userId}});
             const updated_user = {
                 email: email,
                 hashed_password: stringKey,
                 salt: salt,
-                first_name: first_name,
-                last_name: last_name,
+                firstName: firstName,
+                lastName: lastName,
                 birthday: birthday,
                 location: location 
             }
