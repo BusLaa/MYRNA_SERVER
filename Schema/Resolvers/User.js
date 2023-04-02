@@ -29,7 +29,7 @@ const UserResolvers = {
         getAllUsers: async (_,__, ctx) => {
             const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
 
-            if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"])) throw Error("You do not have rights (basically woman)")
+            if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"])) throw Error("You do not have rights")
             
 
             console.log((await models.User.findOne({where: {id: 1}, include: 'Roles'})).Roles)
