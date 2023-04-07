@@ -3,109 +3,147 @@ const {pool} = require("../../connector");
 const {verify, sign} = require ('jsonwebtoken');
 const {isRolesInUser} = require('../../tools/FindUserRolesTool');
 
-const UserQueries = require('../../queries/UserQueries')
-const PostQueries = require('../../queries/PostQueries')
+const { Op } = require("sequelize");
+const sequelize = require("../../connector").sequelize;
+const models = sequelize.models;
 
-const getUserRoles = async (user_id) =>{
-    const resp = await UserQueries.getAllUserRoles(user_id)
-    console.log(resp)
-    const roles = [];
-    for (i of resp){
-        roles.push (i.name)
-    }
-    return roles
+
+
+/* 
+{
+  User: User,
+  UserSubscription: UserSubscription,
+  Post: Post,
+  Comment: Comment,
+  Role: Role,
+  UserRoles: UserRoles,
+  MeetingType: MeetingType,
+  Meeting: Meeting,
+  UserMeetings: UserMeetings,
+  meetingMsg: meetingMsg,
+  userLikes: userLikes,
+  location: location,
+  Place: Place,
+  image: image,
+  MeetingImgs: MeetingImgs,
+  UserImgs: UserImgs,
+  rating: rating
 }
+*/
+
+const getUserRoles = async (userId ) =>{
+    const resp = await models.User.findOne({where: {id: userId}, include: 'Roles'}).then((resp) => resp.Roles)
+    return resp
+}
+
 const PostResolvers = { 
     Query: {
         getAllPosts: async () => {
-            return PostQueries.getAllPosts();
+            return await models.Post.findAll({})
         },
         getPostById: async (_,{id}) => {
-            return PostQueries.getPostById(id)
+            return await models.Post.findOne({where: {id: id}})
         },
         getAllUserPostById: async (_,{id}) => {
-            return PostQueries.getPostsByUserId(id)
+            return await models.Post.findAll({where: {authorId: id}})
         },
         getAllSubscribedPosts: async (_,{id}) =>{
-            return PostQueries.getSubscribedPosts(id);
+            return models.Post.findAll({
+                where: {
+                    author: (await models.User.findAll({where : {id : id}})).Subscribed
+                }
+            })
         },
-        isPostLikedByUser: (_, {post_id, user_id})=>{
-            return PostQueries.isPostLikedByUser(post_id, user_id)
+        isPostLikedByUser: async(_, {postId, userId})=>{
+            return (await models.userLikes.findOne({where: {
+                [Op.and]: {
+                    postId: postId,
+                    userId: userId
+                }
+            }})) === null ? false : true
         }
     },
     Mutation: {
-        addNewPost: async (_,{user_id, header, content}) => {
-            PostQueries.insertPost(user_id, header, content)
-            
-            return PostQueries.getLastPost()
-            
-        },
-        addNewComment: async (_,{user_id, post_id, content}) => {
-            PostQueries.insertComment(user_id, post_id, content)
-            return PostQueries.getLastComment()
-        },
-        addNewSubscription: async (_,{user_id, subscribed_id}) => {
-            await queryTool.insert(pool,
-                `INSERT INTO subscriptions
-                (user_id ,subscribed_id) VALUES
-                (${user_id},${subscribed_id})`)
-            return true
-        },
-        likePost: async (_, {user_id, post_id})=> {
-            try {
-                await queryTool.insert(pool, `INSERT INTO user_likes (user_id, post_id) VALUES (${user_id},${post_id})`);
-                await queryTool.insert(pool, 
-                `UPDATE posts 
-                SET likes = likes + 1
-                WHERE id = ${post_id}`)
-                return true
-            } catch (err){
-                await queryTool.insert(pool, 
-                    `DELETE FROM user_likes WHERE user_id = ${user_id} AND post_id = ${post_id}`);
-                await queryTool.insert(pool, 
-                    `UPDATE posts 
-                    SET likes = likes - 1
-                    WHERE id = ${post_id}`)
-                return false
-            }
+        addNewPost: async (_,{userId, header, content}) => {
+            return await models.Post.create({
+                Author : userId,
+                header: header,
+                content: content
+            })
             
         },
-        deletePost: async (_, {post_id}, ctx)=> {
+        addNewComment: async (_,{userId, postId, content}) => {
+            return await models.Comment.create({
+                userId: userId,
+                postId: postId,
+                content: content
+            })
+        },
+        likePost: async (_, {userId, postId})=> {
+            
+            return sequelize.transaction(async (t) =>{
+                const data = 
+                await models.UserLikes.findOne({where: {
+                    [Op.and]: [
+                        {
+                            PostId:{
+                                [Op.eq]: postId
+                            }
+                        },
+                        {
+                            UserId:{
+                                [Op.eq]: userId
+                            }
+                        }
+                    ]
+                }})
+
+                if (data === null){
+                    await models.UserLikes.create({
+                        PostId: postId,
+                        UserId: userId
+                    })
+                    return true
+                } else {
+                    await data.destroy()
+                    return false
+                }
+            })
+        },
+        deletePost: async (_, {postId}, ctx)=> {
             const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
-            const user_id = (await PostQueries.getPostById(post_id)).author
+            const user_id = (await models.findOne({where: {id: postId}})).Author
             if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"]) && user.id != user_id) throw Error("You do not have rights (basically woman)")
 
-            PostQueries.deletePost(post_id)
+            models.Post.update({deleted: true}, {where: {id: postId}})
             return true;
         },
-        deleteComment: async (_, {comment_id}, ctx) =>{
+        deleteComment: async (_, {commentId}, ctx) =>{
             const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
-            const user_id = (await PostQueries.getCommentById(comment_id)).author
+            const user_id = (await models.findOne({where: {id: commentId}})).Author
             if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"]) && user.id != user_id) throw Error("You do not have rights (basically woman)")
 
-            PostQueries.deleteComment(comment_id)
+            models.Comment.update({deleted: true}, {where: {id: postId}})
             return true;
         }
     },
     Post: {
             comments: async  (post) => {
-                return await queryTool.getMany(pool, `SELECT * FROM comments WHERE deleted = 0 AND post_id = ${post.id}`)
+                return (await models.Post.findOne({where: {id : post.id}, include: "Comments"})).Comments
             },
             author: async (post) =>{
-                data = await queryTool.getOne(pool, `SELECT * FROM users WHERE id = (SELECT author FROM posts WHERE id = ${post.id})`)
-    
-                return data
+                return {id: (await models.Post.findOne({where: {id : post.id}})).Author}
             },
             likes: async (post) =>{
-                return post.likes || 0
+                return (await models.Post.findOne({where: {id : post.id}})).likes
             }
         },
     Comment: {
             author: async  (comment) => {
-                return await queryTool.getOne(pool, `SELECT * FROM users WHERE id = (SELECT author FROM comments WHERE id = ${comment.id})`)
+                return (await models.User.findOne({where: {id : comment.AuthorId}}))
             },
             post: async (comment) => {
-                return await queryTool.getOne(pool, `SELECT * FROM posts WHERE deleted = 0 AND id = ${comment.post_id}`)
+                return await (await models.Post.findOne({where :{id : comment.PostId}}))
             }
         }
     }

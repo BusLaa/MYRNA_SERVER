@@ -45,8 +45,8 @@ const UserTypes = gql`
 
         changeUser(userId: Int!,email: String, password: String, , firstName: String, lastName: String, birthday: String, location: Int): User
 
-        changeUserRoles(id: Int!, roles: [Int]): User
-        addNewSubscription(user_id: Int!, subscribed_id: Int!) : Boolean
+        changeUserRoles(id: Int!, roles: [Int]!): User
+        addNewSubscription(userId: Int!, subscribedId: Int!) : Boolean
 
         
     }

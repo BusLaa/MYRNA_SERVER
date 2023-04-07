@@ -1,12 +1,11 @@
 const passwordGenerator = require('../../tools/PasswordGeneratorTool')
 const {verify, sign} = require ('jsonwebtoken');
-const UserQueries = require('../../queries/UserQueries')
-const PostQueries = require('../../queries/PostQueries')
-const MeetingQueries = require('../../queries/MeetingQueries')
-const LocationQueries = require('../../queries/LocationQueries');
+const { Where } = require('sequelize/lib/utils');
+const { where } = require('sequelize/lib/sequelize');
 
-const Sequelize = require('sequelize')
-const models = require("../../connector").sequelize.models;
+const sequelize = require("../../connector").sequelize;
+const models = sequelize.models;
+
 
 
 
@@ -17,7 +16,6 @@ const getUserRoles = async (userId ) =>{
 
 const isRolesInUser = (userRoles, roles) => {
     userRoles =  userRoles.map ((role) => role.name)
-    console.log(userRoles.indexOf("ADMIN"))
     for (let role of roles){
         if (userRoles.indexOf(role) === -1){return false}
     }
@@ -27,18 +25,22 @@ const isRolesInUser = (userRoles, roles) => {
 const UserResolvers = { 
     Query: { 
         getAllUsers: async (_,__, ctx) => {
-            const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
-
-            if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"])) throw Error("You do not have rights")
+            try{
+                const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
+                if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"])) throw Error("You do not have rights")
+            } catch {
+                throw Error("You do not have rights")   
+            }
             
-
-            console.log((await models.User.findOne({where: {id: 1}, include: 'Roles'})).Roles)
-            //getUserRoles()
+            
             return await models.User.findAll({})
 
         },
         getUserById: async (_, { id }, ctx) => { 
             const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
+            if (user.id !== id || !isRolesInUser(await getUserRoles(user.id), ["ADMIN"])) {
+                throw Error("You do not have access to this information");
+            }
 
             let data = await models.User.findOne({where: {id : id}});
 
@@ -62,8 +64,11 @@ const UserResolvers = {
     Mutation: {
         signup: async (_,{email, firstName, lastName,password, locationId, birthday}) => {
 
-            const User = models.User;
 
+            
+            const User = models.User;
+            const Role = models.Role;
+            const UserRoles = models.UserRoles;
 
             if (password.length <= 8){
                 throw Error('Password too short')
@@ -71,30 +76,39 @@ const UserResolvers = {
             
             const res = await User.findOne({where: {email: email}})
 
-            if (res !== null){
-                throw Error("This email already exists");
-            } 
+            if (res !== null) throw Error("This email already exists");
 
             let [hashed_password, salt] = await passwordGenerator.generateHashedPasswordAndSalt(password);
 
+            const roleUser = await Role.findOne({where: {name : "USER"}});
+            if (roleUser === null) throw Error("Role 'USER' is not defined")
 
-            return User.create({
-                email: email,
-                hashedPassword: hashed_password,
-                salt: salt,
-                firstName: firstName,
-                lastName: lastName,
-                location: locationId,
-                birthday: birthday
-            }).then((user) =>{
-                console.log(user)
-                const token = sign({"user": user}, process.env.SECRET_WORD)
-                const auth = {token: token, user: user }
-                return auth
+            const createdUser = sequelize.transaction(async (t) =>{
+                const user = await User.create({
+                    email: email,
+                    hashedPassword: hashed_password,
+                    salt: salt,
+                    firstName: firstName,
+                    lastName: lastName,
+                    location: locationId,
+                    birthday: birthday,
+                }, {transaction: t});
 
-            }).catch((err) =>{
-                console.log(err)
+                if (user === null) throw Error("User has not been created");
+
+                const createdUserRole = await UserRoles.create({
+                    UserId : user.id ,
+                    RoleId : roleUser.id
+                }, {transaction: t})
+
+                if (createdUserRole === null) throw Error("UserRole has not been created");
+
+                return user;
             })
+
+            const token = sign({"user": createdUser}, process.env.SECRET_WORD)
+            const auth = {token: token, user: createdUser }
+            return auth
             
         },
         signin: async (_, { email, password }) => { 
@@ -105,17 +119,15 @@ const UserResolvers = {
 
             console.log(user)
 
-            if (!user) throw Error('Wrong email or password');
+            if (!user ) throw Error('Wrong email or password');
             if (user.length == 0) throw Error('Za rossiu');
 
-            try{
-                if ( !passwordGenerator.validatePassword(password, user.salt, user.hashedPassword) ) throw Error('wrong email or password');
-            } catch {
-                throw Error('Wrong password');
-            }
+
+            if ( !passwordGenerator.validatePassword(password, user.salt, user.hashedPassword) ) 
+                throw Error('wrong email or password');
 
 
-            user.roles = await user.Roles
+            user.roles = user.Roles
             const token = sign({user: user}, process.env.SECRET_WORD)
 
             const auth = {token: token, user: user }
@@ -123,14 +135,14 @@ const UserResolvers = {
         },
         changeUser: async(_, {userId, email, password,  firstName, lastName, birthday, location}, ctx) =>{
             const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
-            if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"]) && user.id !== user_id ) throw Error("You do not have rights (basically woman)")
+            if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"]) && user.id !== userId ) throw Error("You do not have rights (basically woman)")
 
             let stringKey, salt;
             if (password) {
                 [stringKey, salt] = await passwordGenerator.generateHashedPasswordAndSalt(password);
             }
-            const userToUpdate = await models.User.findOne({where : {id: userId}});
-            const updated_user = {
+            
+            const updatedUser = {
                 email: email,
                 hashed_password: stringKey,
                 salt: salt,
@@ -139,58 +151,58 @@ const UserResolvers = {
                 birthday: birthday,
                 location: location 
             }
-            await UserQueries.updateUser(user_id, updated_user)
+            
+            await models.User.update(updatedUser, {where : {id : userId}})
 
-            return UserQueries.getUserById(user_id)
+            return await models.User.findOne({where : {id : userId}})
 
 
         },
         changeUserRoles: async(_, { id, roles }, ctx) => {
 
+            console.log(id)
+
+            const UserRoles = models.UserRoles;
+            const Role = models.Role;
+
             const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
-            if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"])) throw Error("You do not have rights (basically woman)")
+            if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"])) throw Error("You do not have rights")
 
-            const allRoles = await UserQueries.getAllRoles()
-            const userRoles = await UserQueries.getAllUserRoles(id)
+            await sequelize.transaction(async (t) =>{
+                await UserRoles.destroy({
+                    where: {
+                        userId: id
+                    }
+                }, {transaction: t})
 
-            let userRolesArray = []
-            for (i of userRoles){
-                userRolesArray.push(i.id)
-            }
-            const toChange = {
-                'toDelete': [],
-                'toAdd': []
-            }
+                console.log(roles)
+                for (i of roles){
+                    await UserRoles.create({
+                        UserId : id ,
+                        RoleId : i
+                    }, {transaction: t})
+                }
+            })
             
-            for (i of allRoles){
-                if (roles.includes(i.id) && !userRolesArray.includes(i.id)){
-                    toChange.toAdd.push(i.id)
-                } else if (!roles.includes(i.id) && userRolesArray.includes(i.id)){
-                    toChange.toDelete.push(i.id)
-                }
-            }
-            
-            for (i of toChange.toAdd){
-                try{
-                    UserQueries.insertUserRole(id, i)
-                } catch (err) {
-                    console.log(err)
-                }
-            }
-            for (i of toChange.toDelete){
-                try{
-                    UserQueries.deleteUserRole(id, i)
-                } catch (err) {
-                    console.log(err)
-                }
-            }
+
             return {id: id}
         },
-        addNewSubscription: async (_, {user_id, subscribed_id}, ctx) =>{
-            const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
-            if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"]) && user.id !== user_id ) throw Error("You do not have rights (basically woman)")
+        addNewSubscription: async (_, {userId, subscribedId}, ctx) =>{
+            
 
-            UserQueries.insertSubcription(user_id, subscribed_id);
+            const UserSubscription = models.UserSubscription;
+            const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
+            if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"]) && user.id !== userId ) throw Error("You do not have rights (basically woman)")
+
+
+            const sub = await UserSubscription.create({
+                userId: userId,
+                subscribedId: subscribedId
+            })
+
+            if (sub === null){
+                throw Error("Didn't subscribed")
+            }
         }
 
         
@@ -209,25 +221,29 @@ const UserResolvers = {
             return (await models.User.findOne({where: {id: user.id}})).lastName
         },
         subscriptions: async  (user) =>{
-            return await models.User.findOne({where: {id: user.id}, include: 'Subscriptions'}).Subscriptions
+            return (await models.User.findOne({where: {id: user.id}, include: 'Subscriptions'})).Subscriptions
         },
         subscribed: async (user) => {
-            return await models.User.findOne({where: {id: user.id}, include: 'Subscribed'}).Subscribed
+            return (await models.User.findOne({where: {id: user.id}, include: 'Subscribed'})).Subscribed
         },
         posts: async  (user) => {
-            return await models.User.findOne({where: {id: user.id}, include: 'Posts'}).Posts
+            return (await models.User.findOne({where: {id: user.id}, include: 'Posts'})).Posts
         },
         comments: async  (user) => {
-            return await models.User.findOne({where: {id: user.id}, include: 'Comments'}).Comments
+            return (await models.User.findOne({where: {id: user.id}, include: 'Comments'})).Comments
         },
         roles: async (user) => {
-            return await models.User.findOne({where: {id: user.id}, include: 'Roles'}).Roles
+            return models.User.findOne({where: {id: user.id}, include: 'Roles'})
+            .then((res) => 
+            res.Roles.map((a) => a.name
+            ));
+            
         },
         meetings: async (user) => {
-            return await models.User.findOne({where: {id: user.id}, include: 'Meetings'}).Meetings
+            return (await models.User.findOne({where: {id: user.id}, include: 'Meetings'})).Meetings
         },
         likedPosts: async (user) => {
-            return await models.User.findOne({where: {id: user.id}, include: 'userLikes'}).userLikes
+            return (await models.User.findOne({where: {id: user.id}, include: 'PostLikes'})).PostLikes
         },
         location: async (user) =>{
             //return await models.User.findOne({where: {id: user.id}, include: 'userLikes'}).userLikes

@@ -1,6 +1,6 @@
 const { Sequelize, DataTypes } = require('sequelize');
 
-const defineData = (seq) => {
+const defineData = async (seq) => {
     const User = seq.define('User',{
         id:{
             type : DataTypes.INTEGER,
@@ -88,17 +88,12 @@ const defineData = (seq) => {
     //     models.User.belongsToMany(models.User, {through: 'UserSubscription' , foreignKey: 'userId', otherKey: 'subscribedId'})
     //   };
 
-    User.belongsToMany(User, {as: 'Subscribed', through: 'UserSubscription'})
-    User.belongsToMany(User, {as: 'Subscriptions', through: 'UserSubscription'})
+    User.belongsToMany(User, {as: 'Subscribed', through: 'UserSubscription', foreignKey: "subscribedId"})
+    User.belongsToMany(User, {as: 'Subscriptions', through: 'UserSubscription', foreignKey: "userId"})
     
 
 
     const Post = seq.define('Post', {
-        userId: {
-            type: DataTypes.INTEGER,
-            primaryKey: true,
-            autoIncrement: true
-        },
         header:{
             type: DataTypes.TEXT,
             allowNull: false
@@ -117,7 +112,22 @@ const defineData = (seq) => {
         }
     })
 
-    Post.belongsTo(User, {foreignKey: 'AuthorId', as: 'UserPosts'})
+    Post.belongsTo(User, {foreignKey: 'Author', as: 'UserPosts'})
+
+    Post.belongsToMany(User, {as: 'UserLiked', through: 'UserLikes', foreignKey: 'UserId'})
+    User.belongsToMany(Post, {as: 'PostLikes', through: 'UserLikes', foreignKey: 'PostId'})
+
+    seq.models.UserLikes.afterDestroy(async (userLikes, options) =>{
+        const post = await Post.findOne({where : {id : userLikes.PostId}});
+        post.likes = post.likes - 1;
+        post.save() 
+    })
+
+    seq.models.UserLikes.afterCreate(async (userLikes, options) =>{
+        const post = await Post.findOne({where : {id : userLikes.PostId}});
+        post.likes = post.likes + 1;
+        post.save() 
+    })
 
     const Comment = seq.define('Comment', {
         id: {
@@ -211,10 +221,7 @@ const defineData = (seq) => {
 
 
 
-    const userLikes = seq.define('userLikes', {})
-
-    userLikes.belongsTo(User, {foreignKey: 'UserId'})
-    userLikes.belongsTo(Post, {foreignKey: 'PostId'})
+    
 
     console.log(seq.models.User)
 
@@ -290,7 +297,7 @@ const defineData = (seq) => {
     Rating.belongsTo(Place, {foreignKey: 'PlaceId'})
     Rating.belongsTo(User, {foreignKey: 'UserId'})
 
-
+    
 
 
 
