@@ -125,20 +125,7 @@ const PostResolvers = {
                     })
                     return true
                 } else {
-                    await models.UserLikes.destroy({where: {
-                        [Op.and]: [
-                            {
-                                PostId:{
-                                    [Op.eq]: postId
-                                }
-                            },
-                            {
-                                UserId:{
-                                    [Op.eq]: userId
-                                }
-                            }
-                        ]
-                    }})
+                    await data.destroy()
                     return false
                 }
             })
