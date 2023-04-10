@@ -3,7 +3,7 @@ const { ApolloServerPluginDrainHttpServer } = require('apollo-server-core');
 const { makeExecutableSchema } = require('@graphql-tools/schema');
 const express = require("express"); 
 const http = require("http")
-import cors from 'cors';
+const cors = require('cors')
 const PORT = 4000;
 
 
@@ -39,7 +39,7 @@ const startApolloServer = async (schema) => {
 
     await server.start() 
 
-    app.use(cors<cors.CorsRequest>({ origin:'*'}))
+    app.use(cors())
     server.applyMiddleware({ app, path: '/' }); 
     await httpServer.listen(process.env.PORT || 4000, () => { 
         console.log("Server succesfully started")
