@@ -94,8 +94,8 @@ const PostResolvers = {
         },
         addNewComment: async (_,{userId, postId, content}) => {
             return await models.Comment.create({
-                userId: userId,
-                postId: postId,
+                AuthorId: userId,
+                PostId: postId,
                 content: content
             })
         },
