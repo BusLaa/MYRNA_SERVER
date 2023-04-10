@@ -54,7 +54,7 @@ const MeetingResolvers = {
                     chief: creator
                 }, {transaction:t})
     
-                await models.UserMeetings.create({
+                await models.UserMeeting.create({
                     MeetingId: meeting.id,
                     UserId: creator
                 }, {transaction:t})
