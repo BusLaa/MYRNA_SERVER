@@ -1,10 +1,8 @@
-const PostQueries = require('../../queries/MeetingQueries')
-const MeetingQueries = require('../../queries/MeetingQueries')
-const UserQueries = require('../../queries/UserQueries')
 const {verify, sign} = require ('jsonwebtoken');
 const {isRolesInUser} = require('../../tools/FindUserRolesTool');
 
 const { Op } = require("sequelize");
+const { MeetingTypes } = require('../TypeDefs/Meeting');
 const sequelize = require("../../connector").sequelize;
 const models = sequelize.models;
 
@@ -19,7 +17,7 @@ const models = sequelize.models;
   UserRoles: UserRoles,
   MeetingType: MeetingType,
   Meeting: Meeting,
-  UserMeetings: UserMeetings,
+  UserMeeting: UserMeeting,
   meetingMsg: meetingMsg,
   location: location,
   Place: Place,
@@ -38,7 +36,7 @@ const getUserRoles = async (userId ) =>{
 const MeetingResolvers = {
     Query: {
         getAllMeetings: () =>{
-            return PostQueries.getAllMeetings();
+            return models.Meeting.findAll();
         },
     },
     Mutation: {
@@ -62,18 +60,10 @@ const MeetingResolvers = {
         },
         inviteUserToMeeting: async (_, {meetingId, userId}, ctx) => {
 
-            const checkIfUserInMeeting = (user_id, members)=>{
-                for (i of members) {
-                    if (i.id == user_id){
-                        return true;
-                    }
-                } 
-                return false
-            } 
             const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
 
             if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"])
-            || (models.UserMeetings.findOne({where: {
+            || ((await models.UserMeetings.findOne({where: {
                 [Op.and]: [
                     {
                         UserId:{
@@ -86,7 +76,7 @@ const MeetingResolvers = {
                         }
                     }
                 ]
-            }}) === null))
+            }})) === null))
                 throw Error("You do not have rights (basically woman)")
 
             try{
@@ -110,9 +100,8 @@ const MeetingResolvers = {
 
             const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
 
-            console.log(await MeetingQueries.getAllMeetingMembers(meeting_id))
             if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"])
-            || (models.UserMeetings.findOne({where: {
+            || ((await models.UserMeetings.findOne({where: {
                 [Op.and]: [
                     {
                         UserId:{
@@ -125,75 +114,132 @@ const MeetingResolvers = {
                         }
                     }
                 ]
-            }}) === null))
+            }})) === null))
                 throw Error("You do not have rights (basically woman)")
 
-            const users = await MeetingQueries.getAllMeetingMembers(meeting_id);
+            const users = await models.UserMeetings.findAll({where: {meetingId : meetingId}});
 
 
-            await MeetingQueries.removeMeetingUser(meeting_id, user_id);
+            const userMeeting = await models.UserMeetings.findOne({where: {
+                [Op.and]: [
+                    {
+                        UserId:{
+                            [Op.eq]: userId
+                        }
+                    },
+                    {
+                        MeetingId:{
+                            [Op.eq]: meetingId
+                        }
+                    }
+                ]
+            }})
+
+
+            await userMeeting.destroy();
             if (users.length > 1) {return true}
-            await MeetingQueries.deleteMeeting(meeting_id)
+            await models.Meeting.destroy({where: {id: meetingId}})
             return true
         },
-        changeMeeting: async (_, {meeting_id, name, date}, ctx) => {
-            const checkIfUserInMeeting = (user_id, members)=>{
-                for (i of members) {
-                    if (i.id == user_id){
-                        return true;
-                    }
-                    return false
-                } 
-            } 
-            try{
-                const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
-
-                if (!isRolesInUser(await UserQueries.getAllUserRoles(user.id), ["ADMIN"]) 
-                && !checkIfUserInMeeting(user.id, await MeetingQueries.getAllMeetingMembers(meeting_id)))
-                    throw Error("You do not have rights (basically woman)")
-
-            } catch (err){
-                throw Error("You do not have rights (basically woman)")
-            }
-            
-            MeetingQueries.changeMeeting(meeting_id, name, date);
-            return MeetingQueries.getMeetingById(meeting_id)
-        },
-        makeChief: async (_, {meeting_id, user_id}, ctx) =>{
+        changeMeeting: async (_, {meetingId, name, date}, ctx) => {
             const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
 
-            console.log(await MeetingQueries.getMeetingById(meeting_id))
-            const meeting = await (MeetingQueries.getMeetingById(meeting_id));
-            if (!(isRolesInUser(await UserQueries.getAllUserRoles(user.id), ["ADMIN"]) 
-            || (meeting.chief == user.id)))
+            if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"])
+            || ((await models.UserMeetings.findOne({where: {
+                [Op.and]: [
+                    {
+                        UserId:{
+                            [Op.eq]: user.id
+                        }
+                    },
+                    {
+                        MeetingId:{
+                            [Op.eq]: meetingId
+                        }
+                    }
+                ]
+            }})) === null))
                 throw Error("You do not have rights (basically woman)")
-            MeetingQueries.updateMeetingChief(meeting_id, user_id)
+
+
+            const meeting = models.Meeting.findOne({where : {id : meetingId}})
+            
+            meeting.name = name;
+            meeting.date = date
+            meeting.update()
+            return meeting
+        },
+        makeChief: async (_, {meetingId, userId}, ctx) =>{
+            const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
+
+            const meeting = await models.Meeting.findOne({where: {id : meetingId}});
+
+            if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"])
+            || (meeting.chief == user.id))
+                throw Error("You do not have rights (basically woman)")
+            
+            meeting.chief = userId
+
+            models.Meeting.update(meeting, {where: {id: meetingId}})
             return true
         },
-        makeImportant: async (_, {meeting_id, user_id}, ctx) => {
-            MeetingQueries.updateImportantUserMeetings(meeting_id, user_id)
-            const res = await MeetingQueries.getUserMeetingByUserIdAndMeetingId(meeting_id, user_id)
-            return res.important
+        makeImportant: async (_, {meetingId, userId}, ctx) => {
+            const userMeeting = await models.UserMeeting.findOne({where:{
+                [Op.and]: [
+                    {
+                        UserId:{
+                            [Op.eq]: userId
+                        }
+                    },
+                    {
+                        MeetingId:{
+                            [Op.eq]: meetingId
+                        }
+                    }
+                ]
+            }
+            })
+
+            userMeeting.important = !userMeeting.important
+
+            await models.UserMeeting.update(userMeeting, {where:{
+                    [Op.and]: [
+                        {
+                            UserId:{
+                                [Op.eq]: userId
+                            }
+                        },
+                        {
+                            MeetingId:{
+                                [Op.eq]: meetingId
+                            }
+                        }
+                    ]
+                }
+            })
+
+            return userMeeting.important
         }
     },
     Meeting:{
         type: async (meeting) =>{
-            return (await MeetingQueries.getMeetingType(meeting.id)).name
+            const meetingType =await  models.Meeting.findOne({where: {id: meeting.id}});
+            return (await models.MeetingType.findOne({where:{id : meetingType.id}})).name;
         },
         members: async (meeting) => {
-            return MeetingQueries.getAllMeetingMembers(meeting.id)
+            return models.UserMeeting.findAll({where: {meetingId: meeting.id}})
         },
         creator: async (meeting) => {
-            return MeetingQueries.getMeetingCreator(meeting.id);
+            return (await models.Meeting.findOne({where: {id: meeting.id}})).creator
         },
         places: async (meeting) => {
             return models.PlaceMeeting.findAll({where: {MeetingId: meeting.id}})
         },
         chief: async (meeting) =>{
-            return MeetingQueries.getChiefByMeetingId(meeting.id)
+            return (await models.Meeting.findOne({where: {id: meeting.id}})).chief
         },
         messages: async (meeting) => {
-            return MeetingQueries.getAllMeetingMessages(meeting.id)
+            return models.MeetingMsg.findAll({where: {meetingId: meeting.id}})
         }
     }
 }

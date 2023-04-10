@@ -196,10 +196,18 @@ const defineData = async (seq) => {
 
     //MeetingType.hasOne(Meeting)
     Meeting.belongsTo(MeetingType, {foreignKey: 'typeId'});
-    
 
-    Meeting.belongsToMany(User, {through: 'UserMeetings'});
-    User.belongsToMany(Meeting, {through: 'UserMeetings'});
+    const userMeeting = seq.define('UserMeeting',{
+        important:{
+            type: DataTypes.BOOLEAN,
+            defaultValue: false
+        }
+    })
+
+    Meeting.belongsToMany(User, {through: userMeeting});
+    User.belongsToMany(Meeting, {through: userMeeting});
+
+    
 
     Meeting.belongsTo(User, {foreignKey: "creator"})
     Meeting.belongsTo(User, {foreignKey: "chief"})
@@ -220,6 +228,7 @@ const defineData = async (seq) => {
     })
 
     meetingMsg.belongsTo(User, {foreignKey: 'authorId'})
+    meetingMsg.belongsTo(Meeting, {foreignKey: 'meetingId'})
     meetingMsg.belongsTo(meetingMsg, {foreignKey : 'referenceMsgId'})
 
 

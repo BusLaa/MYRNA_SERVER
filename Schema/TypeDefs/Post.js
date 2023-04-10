@@ -20,14 +20,14 @@ const PostTypes = gql`
         getAllPosts: [Post]
         getAllUserPostById(id: Int!): [Post]
         getAllSubscribedPosts (id: Int!): [Post] 
-        isPostLikedByUser(post_id: Int!, user_id: Int!): Boolean
+        isPostLikedByUser(postId: Int!, userId: Int!): Boolean
     }
     type Mutation{
         addNewPost(userId: Int!, header: String!, content: String!): Post
         addNewComment(userId: Int!, postId: Int!, content: String!): Comment
         likePost(userId: Int!,postId: Int! ): Boolean
-        deletePost(post_id: Int!): Boolean
-        deleteComment(comment_id: Int!):Boolean
+        deletePost(postId: Int!): Boolean
+        deleteComment(commentId: Int!):Boolean
         
     }
 `
