@@ -147,10 +147,10 @@ const PostResolvers = {
         },
         deleteComment: async (_, {commentId}, ctx) =>{
             const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
-            const user_id = (await models.Comment.findOne({where: {id: commentId}})).Author
+            const user_id = (await models.Comment.findOne({where: {id: commentId}})).AuthorId
             if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"]) && user.id != user_id) throw Error("You do not have rights (basically woman)")
 
-            models.Comment.update({deleted: true}, {where: {id: postId}})
+            models.Comment.update({deleted: true}, {where: {id: commentId}})
             return true;
         }
     },
