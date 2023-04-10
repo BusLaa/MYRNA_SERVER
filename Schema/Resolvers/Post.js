@@ -75,11 +75,19 @@ const PostResolvers = {
             })
         },
         isPostLikedByUser: async(_, {postId, userId})=>{
-            return (await models.userLikes.findOne({where: {
-                [Op.and]: {
-                    postId: postId,
-                    userId: userId
-                }
+            return (await models.UserLikes.findOne({where: {
+                [Op.and]: [
+                    {
+                        PostId:{
+                            [Op.eq]: postId
+                        }
+                    },
+                    {
+                        UserId:{
+                            [Op.eq]: userId
+                        }
+                    }
+                ]
             }})) === null ? false : true
         }
     },
@@ -102,8 +110,7 @@ const PostResolvers = {
         likePost: async (_, {userId, postId})=> {
             
             return sequelize.transaction(async (t) =>{
-                const data = 
-                await models.UserLikes.findOne({where: {
+                const data = await models.UserLikes.findOne({where: {
                     [Op.and]: [
                         {
                             PostId:{
