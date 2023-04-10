@@ -125,7 +125,7 @@ const PostResolvers = {
                     })
                     return true
                 } else {
-                    await data.destroy()
+                    await data.destroy();
                     return false
                 }
             })
