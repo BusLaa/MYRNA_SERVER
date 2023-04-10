@@ -142,11 +142,13 @@ const defineData = async (seq) => {
             type: DataTypes.BOOLEAN
         }
     })
-    Comment.belongsTo(User, {foreignKey: 'AuthorId'})
-    User.hasOne(Comment, {as: 'Comments'})
 
+    User.hasMany(Comment, {foreignKey: 'AuthorId', as: 'Comments'})
+    Comment.belongsTo(User, {foreignKey: 'AuthorId'})
+    
+    Post.hasMany(Comment, {as: 'Comments'})
     Comment.belongsTo(Post, {foreignKey: 'PostId'})
-    Post.hasOne(Comment, {as: 'Comments'})
+    
 
     const Role = seq.define('Role', {
         id: {
