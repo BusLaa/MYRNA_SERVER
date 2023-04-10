@@ -44,21 +44,27 @@ const MeetingResolvers = {
     Mutation: {
         createNewMeeting: async (_, {name,date, type, creator,status}) => {
 
-            const meeting = await models.Meeting.create({
-                name: name,
-                date: date,
-                type: type,
-                creator: creator,
-                status: status
-            })
+            const created = await sequelize.transaction(async (t)=>{
+                const meeting = await models.Meeting.create({
+                    name: name,
+                    date: date,
+                    type: type,
+                    creator: creator,
+                    status: status,
+                    chief: creator
+                }, {transaction:t})
+    
+                await models.UserMeetings.create({
+                    MeetingId: meeting.id,
+                    UserId, creator
+                }, {transaction:t})
 
-            await models.UserMeetings.create({
-                MeetingId: meeting.id,
-                UserId, creator
+                return meeting
             })
+            
 
-            meeting.date = new Date(meeting.date).toDateString()
-            return meeting
+            created.date = new Date(created.date).toDateString()
+            return created
         },
         inviteUserToMeeting: async (_, {meetingId, userId}, ctx) => {
 
