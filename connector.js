@@ -54,6 +54,7 @@ sequelize.authenticate().then(() => {
           }
       })
   })
+  console.log(sequelize.models)
 });
 
 

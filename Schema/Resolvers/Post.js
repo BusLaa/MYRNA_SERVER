@@ -9,27 +9,7 @@ const models = sequelize.models;
 
 
 
-/* 
-{
-  User: User,
-  UserSubscription: UserSubscription,
-  Post: Post,
-  Comment: Comment,
-  Role: Role,
-  UserRoles: UserRoles,
-  MeetingType: MeetingType,
-  Meeting: Meeting,
-  UserMeetings: UserMeetings,
-  meetingMsg: meetingMsg,
-  userLikes: userLikes,
-  location: location,
-  Place: Place,
-  image: image,
-  MeetingImgs: MeetingImgs,
-  UserImgs: UserImgs,
-  rating: rating
-}
-*/
+
 
 const getUserRoles = async (userId ) =>{
     const resp = await models.User.findOne({where: {id: userId}, include: 'Roles'}).then((resp) => resp.Roles)

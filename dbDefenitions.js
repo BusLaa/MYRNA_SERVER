@@ -201,6 +201,9 @@ const defineData = async (seq) => {
     Meeting.belongsToMany(User, {through: 'UserMeetings'});
     User.belongsToMany(Meeting, {through: 'UserMeetings'});
 
+    Meeting.belongsTo(User, {foreignKey: "creator"})
+    Meeting.belongsTo(User, {foreignKey: "chief"})
+
     const meetingMsg = seq.define('meetingMsg',{
         id :{
             type: DataTypes.INTEGER,
@@ -281,6 +284,9 @@ const defineData = async (seq) => {
             type: DataTypes.STRING
         }
     })
+
+    Place.belongsToMany(Meeting, {through: 'PlaceMeetings', as: 'Meetings'})
+    Meeting.belongsToMany(Place, {through: 'PlaceMeetings', as: 'Places'})
 
     Meeting.belongsToMany(Image, {through: 'MeetingImgs'});
     Image.belongsToMany(Meeting, {through: 'MeetingImgs'});
