@@ -92,7 +92,7 @@ const PostResolvers = {
         },
         deletePost: async (_, {postId}, ctx)=> {
             const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
-            const user_id = (await models.findOne({where: {id: postId}})).Author
+            const user_id = (await models.Post.findOne({where: {id: postId}})).Author
             if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"]) && user.id != user_id) throw Error("You do not have rights (basically woman)")
 
             models.Post.update({deleted: true}, {where: {id: postId}})
@@ -100,7 +100,7 @@ const PostResolvers = {
         },
         deleteComment: async (_, {commentId}, ctx) =>{
             const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
-            const user_id = (await models.findOne({where: {id: commentId}})).Author
+            const user_id = (await models.Post.findOne({where: {id: commentId}})).Author
             if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"]) && user.id != user_id) throw Error("You do not have rights (basically woman)")
 
             models.Comment.update({deleted: true}, {where: {id: postId}})
