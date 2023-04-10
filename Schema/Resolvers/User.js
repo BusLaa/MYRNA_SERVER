@@ -239,7 +239,7 @@ const UserResolvers = {
         },
         location: async (user) =>{
             //return await models.User.findOne({where: {id: user.id}, include: 'userLikes'}).userLikes
-            return "There is a bug that I am currently too lazy to fix"
+            return (await models.location.findOne({where: {id: user.location}}))
         },
         avatar: async (user) =>{
             //return await models.User.findOne({where: {id: user.id}, include: 'userLikes'}).userLikes

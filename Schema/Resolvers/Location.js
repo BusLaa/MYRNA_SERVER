@@ -13,12 +13,12 @@ const LocationResolvers = {
         }
     },
     Mutation:{
-        createLocation: async (_, {longitude, latitude, country ,city, postal_code, details}) =>{
-            await LocationQueries.createLocation(longitude, latitude, country, city, postal_code, details);
+        createLocation: async (_, {longitude, latitude, country ,city, postalCode, details}) =>{
+            await LocationQueries.createLocation(longitude, latitude, country, city, postalCode, details);
             return await LocationQueries.getLastLocation()
         },
-        deleteLocation: async (_, {location_id}) =>{
-            LocationQueries.deleteLocation(location_id)
+        deleteLocation: async (_, {locationId}) =>{
+            LocationQueries.deleteLocation(locationId)
         }
     },
     Place: {

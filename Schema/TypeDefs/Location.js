@@ -22,8 +22,8 @@ const LocationTypes = gql`
         getPlaceById(place_id: Int!): Place! 
     }
     type Mutation {
-        createLocation(longitude: Float, latitude: Float, country: String! ,city: String!, postal_code: String!, details: String): Location!
-        deleteLocation(location_id: Int!): Boolean!
+        createLocation(longitude: Float, latitude: Float, country: String! ,city: String!, postalCode: String!, details: String): Location!
+        deleteLocation(locationId: Int!): Boolean!
     }
     
 `
