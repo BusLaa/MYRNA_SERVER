@@ -32,6 +32,13 @@ const getUserRoles = async (userId ) =>{
     const resp = await models.User.findOne({where: {id: userId}, include: 'Roles'}).then((resp) => resp.Roles)
     return resp
 }
+const isRolesInUser = (userRoles, roles) => {
+    userRoles =  userRoles.map ((role) => role.name)
+    for (let role of roles){
+        if (userRoles.indexOf(role) === -1){return false}
+    }
+    return true
+}
 
 const MeetingResolvers = {
     Query: {
