@@ -116,8 +116,8 @@ const defineData = async (seq) => {
     Post.belongsTo(User, {foreignKey: 'Author'})
     
 
-    Post.belongsToMany(User, {as: 'UserLiked', through: 'UserLikes', foreignKey: 'UserId'})
-    User.belongsToMany(Post, {as: 'PostLikes', through: 'UserLikes', foreignKey: 'PostId'})
+    Post.belongsToMany(User, {as: 'UserLiked', through: 'UserLikes', foreignKey: 'PostId'})
+    User.belongsToMany(Post, {as: 'PostLikes', through: 'UserLikes', foreignKey: 'UserId'})
 
     seq.models.UserLikes.afterDestroy(async (userLikes, options) =>{
         const post = await Post.findOne({where : {id : userLikes.PostId}});
