@@ -32,28 +32,31 @@ sequelize.authenticate().then(() => {
 }).then(() =>{
   defineData(sequelize)
 }).then(() =>{
-  sequelize.sync();
+  sequelize.sync({force: true});
   console.log("All models were synchronized successfully.");
 }).then(() =>{
-  // const Role = sequelize.models.Role
-  // console.log(sequelize.models)
-  // Role.findOrCreate({
-  //     where:{
-  //         name: "ADMIN"
-  //     }
-  // }).then(() =>{
-  //     Role.findOrCreate({
-  //         where:{
-  //             name: "MANAGER"
-  //         }
-  //     })
-  // }).then(() =>{
-  //     Role.findOrCreate({
-  //         where:{
-  //             name: "USER"
-  //         }
-  //     })
-  // })
+  const Role = sequelize.models.Role
+  console.log(sequelize.models)
+  setTimeout(()=>{
+    Role.findOrCreate({
+      where:{
+          name: "ADMIN"
+      }
+    }).then(() =>{
+        Role.findOrCreate({
+            where:{
+                name: "MANAGER"
+            }
+        })
+    }).then(() =>{
+        Role.findOrCreate({
+            where:{
+                name: "USER"
+            }
+        })
+    })
+  }, 2000)
+  
   console.log(sequelize.models)
 });
 
