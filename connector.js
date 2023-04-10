@@ -32,7 +32,7 @@ sequelize.authenticate().then(() => {
 }).then(() =>{
   defineData(sequelize)
 }).then(() =>{
-  sequelize.sync({force: true});
+  sequelize.sync();
   console.log("All models were synchronized successfully.");
 }).then(() =>{
   const Role = sequelize.models.Role

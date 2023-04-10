@@ -112,7 +112,9 @@ const defineData = async (seq) => {
         }
     })
 
-    Post.belongsTo(User, {foreignKey: 'Author', as: 'UserPosts'})
+    User.hasMany(Post, {as: 'Posts'})
+    Post.belongsTo(User, {foreignKey: 'Author'})
+    
 
     Post.belongsToMany(User, {as: 'UserLiked', through: 'UserLikes', foreignKey: 'UserId'})
     User.belongsToMany(Post, {as: 'PostLikes', through: 'UserLikes', foreignKey: 'PostId'})
