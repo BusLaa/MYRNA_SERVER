@@ -34,7 +34,12 @@ const startApolloServer = async (schema) => {
             ApolloServerPluginDrainHttpServer({ httpServer })
         ],
         introspection: true,
-        context: ({req, res}) => ({req, res})
+        context: ({req, res}) => ({req, res}),
+        cors: {
+
+            origin: "*"
+        
+          }
     });
 
     await server.start() 
