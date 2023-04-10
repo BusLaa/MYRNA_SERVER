@@ -143,7 +143,10 @@ const defineData = async (seq) => {
         }
     })
     Comment.belongsTo(User, {foreignKey: 'AuthorId'})
+    User.hasOne(Comment, {as: 'Comments'})
+
     Comment.belongsTo(Post, {foreignKey: 'PostId'})
+    Post.hasOne(Comment, {as: 'Comments'})
 
     const Role = seq.define('Role', {
         id: {
