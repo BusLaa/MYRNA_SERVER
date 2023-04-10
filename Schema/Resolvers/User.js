@@ -75,7 +75,7 @@ const UserResolvers = {
             const roleUser = await Role.findOne({where: {name : "USER"}});
             if (roleUser === null) throw Error("Role 'USER' is not defined")
 
-            const createdUser = sequelize.transaction(async (t) =>{
+            const createdUser = await sequelize.transaction(async (t) =>{
                 const user = await User.create({
                     email: email,
                     hashedPassword: hashed_password,
