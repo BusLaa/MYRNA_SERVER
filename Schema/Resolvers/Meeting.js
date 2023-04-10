@@ -56,7 +56,7 @@ const MeetingResolvers = {
     
                 await models.UserMeetings.create({
                     MeetingId: meeting.id,
-                    UserId, creator
+                    UserId: creator
                 }, {transaction:t})
 
                 return meeting
