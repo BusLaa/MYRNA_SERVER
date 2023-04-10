@@ -3,13 +3,6 @@ const LocationQueries = require('../../queries/LocationQueries');
 const sequelize = require("../../connector").sequelize;
 const models = sequelize.models;
 
-const isRolesInUser = (userRoles, roles) => {
-    userRoles =  userRoles.map ((role) => role.name)
-    for (let role of roles){
-        if (userRoles.indexOf(role) === -1){return false}
-    }
-    return true
-}
 const LocationResolvers = {
     Query: {
         getAllPlaces: async () =>{
