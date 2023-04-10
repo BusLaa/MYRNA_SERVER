@@ -156,7 +156,11 @@ const PostResolvers = {
     },
     Post: {
             comments: async  (post) => {
-                return (await models.Post.findOne({where: {id : post.id}, include: "Comments"})).Comments.map((com) => {if (com.deleted) com.content = "[DELETED]"})
+                return (await models.Post.findOne({where: {id : post.id}, include: "Comments"})).Comments
+                .map((com) => {
+                    if (com.deleted) com.content = "[DELETED]"
+                    return com
+                })
             },
             author: async (post) =>{
                 return {id: (await models.Post.findOne({where: {id : post.id}})).Author}
