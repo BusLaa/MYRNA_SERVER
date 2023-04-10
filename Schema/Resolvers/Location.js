@@ -6,24 +6,33 @@ const models = sequelize.models;
 const LocationResolvers = {
     Query: {
         getAllPlaces: async () =>{
-            return models.location.findAll();
+            return models.Place.findAll();
         },
-        getPlaceById: async (_, {place_id}) =>{
-            return LocationQueries.getLocationByPlaceId(place_id)
+        getPlaceById: async (_, {placeId}) =>{
+            return models.Place.findOne({where: {id: placeId}})
         }
     },
     Mutation:{
         createLocation: async (_, {longitude, latitude, country ,city, postalCode, details}) =>{
-            await LocationQueries.createLocation(longitude, latitude, country, city, postalCode, details);
-            return await LocationQueries.getLastLocation()
+            return await models.location.create({
+                longitude: longitude,
+                latitude: latitude,
+                country: country,
+                city: city,
+                postalCode: postalCode,
+                details: details
+            })
+            //return await LocationQueries.getLastLocation()
         },
         deleteLocation: async (_, {locationId}) =>{
-            LocationQueries.deleteLocation(locationId)
+            await models.location.destroy({
+                id: locationId
+            })
         }
     },
     Place: {
         location: (place) => {
-            return LocationQueries.getLocationByPlaceId(place.id)
+            return models.location.findOne({where: {id: place.locationId}})
         }
     }
 
