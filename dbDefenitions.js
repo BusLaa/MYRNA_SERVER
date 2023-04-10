@@ -34,7 +34,7 @@ const defineData = async (seq) => {
             allowNull: false,
             validate: {
                 isLongEnough(value){
-                    if (typeof value === 'string' && value.length < 8){
+                    if (typeof value === 'string' && value.length < 2){
                         throw new Error("first name is too short")
                     }
                 }
@@ -45,7 +45,7 @@ const defineData = async (seq) => {
             allowNull: false,
             validate: {
                 isLongEnough(value){
-                    if (typeof value === 'string' && value.length < 8){
+                    if (typeof value === 'string' && value.length < 2){
                         throw new Error("last name is too short")
                     }
                 }
