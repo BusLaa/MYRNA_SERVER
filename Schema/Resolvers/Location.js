@@ -1,8 +1,11 @@
 const LocationQueries = require('../../queries/LocationQueries');
+
+const sequelize = require("../../connector").sequelize;
+const models = sequelize.models;
 const LocationResolvers = {
     Query: {
         getAllPlaces: async () =>{
-            return LocationQueries.getAllPlaces()
+            return models.location.findAll();
         },
         getPlaceById: async (_, {place_id}) =>{
             return LocationQueries.getLocationByPlaceId(place_id)

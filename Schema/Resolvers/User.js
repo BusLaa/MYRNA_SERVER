@@ -38,7 +38,7 @@ const UserResolvers = {
         },
         getUserById: async (_, { id }, ctx) => { 
             const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
-            if (user.id !== id || !isRolesInUser(await getUserRoles(user.id), ["ADMIN"])) {
+            if (user.id !== id && !isRolesInUser(await getUserRoles(user.id), ["ADMIN"])) {
                 throw Error("You do not have access to this information");
             }
 
@@ -52,10 +52,10 @@ const UserResolvers = {
         },
         getUsersByName: async (_, {search} ) =>{
             if (search.trim() == "") return [];
-            const concated = Sequelize.fn('CONCAT', Sequelize.col("firstName"),Sequelize.col("lastName"),Sequelize.col("email"));
-            const searchQuery = {[Sequelize.Op.like] : '%'+search.trim().toLowerCase()+'%'}
+            const concated = sequelize.fn('CONCAT', Sequelize.col("firstName"),Sequelize.col("lastName"),Sequelize.col("email"));
+            const searchQuery = {[sequelize.Op.like] : '%'+search.trim().toLowerCase()+'%'}
             const criteria = {
-                where: Sequelize.where(concated, searchQuery)
+                where: sequelize.where(concated, searchQuery)
             }
             return models.User.findAll(criteria)
         }
