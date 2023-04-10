@@ -30,10 +30,7 @@
     "jsonwebtoken": "^8.5.1",
     "mysql": "^2.18.1",
     "mysql2": "^2.3.3",
-<<<<<<< HEAD
-    "sequelize": "^6.29.3"
-=======
+    "sequelize": "^6.29.3",
     "nodemon": "^2.0.22"
->>>>>>> af879dd934e3d1ffadd37cba9911b2ee0e88942e
   }
 }

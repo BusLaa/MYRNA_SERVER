@@ -1,6 +1,7 @@
 const {verify, sign} = require ('jsonwebtoken');
 const {isRolesInUser} = require('../../tools/FindUserRolesTool');
 
+
 const { Op } = require("sequelize");
 const { MeetingTypes } = require('../TypeDefs/Meeting');
 const sequelize = require("../../connector").sequelize;
@@ -242,12 +243,6 @@ const MeetingResolvers = {
         messages: async (meeting) => {
             return models.MeetingMsg.findAll({where: {meetingId: meeting.id}})
         }
-    },
-    MeetingMessage:{
-        author: async (msg) => {
-            return UserQueries.getUserById(msg.author)
-        }
     }
-    
 }
 module.exports = {MeetingResolvers}
