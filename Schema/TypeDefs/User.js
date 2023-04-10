@@ -8,8 +8,8 @@ const UserTypes = gql`
     type User {
         id: Int!
         email: String! 
-        first_name: String!
-        last_name: String!
+        firstName: String!
+        lastName: String!
         birthday: String
         location: Location
         avatar: Int!
@@ -40,13 +40,13 @@ const UserTypes = gql`
 
     }
     type Mutation {
-        signup(email: String!, password: String!, first_name: String!, last_name: String!, location_id: Int, birthday: String): AuthPayload
+        signup(email: String!, password: String!, firstName: String!, lastName: String!, locationId: Int, birthday: String): AuthPayload
         signin(email: String!, password: String!): AuthPayload
 
-        changeUser(user_id: Int!,email: String, password: String, , first_name: String, last_name: String, birthday: String, location: Int): User
+        changeUser(userId: Int!,email: String, password: String, , firstName: String, lastName: String, birthday: String, location: Int): User
 
-        changeUserRoles(id: Int!, roles: [Int]): User
-        addNewSubscription(user_id: Int!, subscribed_id: Int!) : Boolean
+        changeUserRoles(id: Int!, roles: [Int]!): User
+        addNewSubscription(userId: Int!, subscribedId: Int!) : Boolean
 
         
     }

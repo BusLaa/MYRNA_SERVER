@@ -7,7 +7,7 @@ const LocationTypes = gql`
         longitude: Float,
         country: String!,
         city: String!,
-        postal_code: String!,
+        postalCode: String!,
         details: String
     }
     type Place {
