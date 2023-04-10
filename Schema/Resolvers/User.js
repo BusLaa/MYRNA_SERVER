@@ -244,6 +244,9 @@ const UserResolvers = {
         avatar: async (user) =>{
             //return await models.User.findOne({where: {id: user.id}, include: 'userLikes'}).userLikes
             return (await models.User.findOne({where: {id: user.id}})).avatar
+        },
+        birthday: async(user)=>{
+            return (await models.User.findOne({where: {id: user.id}})).birthday || "No DATA"
         }
     },
     
