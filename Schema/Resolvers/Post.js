@@ -20,18 +20,57 @@ const getUserRoles = async (userId ) =>{
 const PostResolvers = { 
     Query: {
         getAllPosts: async () => {
-            return await models.Post.findAll({})
+            return await models.Post.findAll({where: {deleted: false}})
         },
         getPostById: async (_,{id}) => {
             return await models.Post.findOne({where: {id: id}})
         },
         getAllUserPostById: async (_,{id}) => {
-            return await models.Post.findAll({where: {authorId: id}})
+            return await models.Post.findAll({where:{
+                [Op.and]: [
+                    {
+                        authorId:{
+                            [Op.eq]: id
+                        }
+                    },
+                    {
+                        deleted:{
+                            [Op.eq]: false
+                        }
+                    }
+                ]}
+            })
         },
+        /**
+         ({where:{
+                [Op.and]: [
+                    {
+                        authorId:{
+                            [Op.eq]: id
+                        }
+                    },
+                    {
+                        deleted:{
+                            [Op.eq]: false
+                        }
+                    }
+                ]}
+            })
+         */
         getAllSubscribedPosts: async (_,{id}) =>{
             return models.Post.findAll({
                 where: {
-                    author: (await models.User.findAll({where : {id : id}})).Subscribed
+                    [Op.and]:[
+                        {
+                            author: [Op.in] (await models.User.findAll({where : {id : id}})).Subscribed
+                        },
+                        {
+                            deleted:{
+                                [Op.eq] : false
+                            }
+                        }
+                    ]
+                    
                 }
             })
         },
