@@ -63,8 +63,8 @@ const ConversationResolvers = {
             }})
 
             if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"])
-            && (userMeeting) === null)
-                throw Error("You do not have rights (basically woman)")
+            && (userConversation) === null)
+                throw Error("You do not have rights")
 
             const users = await models.UserConversations.findAll({where: {conversationId : conversationId}});
 
