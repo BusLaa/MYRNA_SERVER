@@ -108,8 +108,7 @@ const MeetingResolvers = {
 
             const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
 
-            if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"])
-            || ((await models.UserMeetings.findOne({where: {
+            const userMeeting = await models.UserMeeting.findOne({where: {
                 [Op.and]: [
                     {
                         UserId:{
@@ -122,27 +121,14 @@ const MeetingResolvers = {
                         }
                     }
                 ]
-            }})) === null))
+            }})
+            console.log(userMeeting)
+
+            if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"])
+            && (userMeeting) === null)
                 throw Error("You do not have rights (basically woman)")
 
-            const users = await models.UserMeetings.findAll({where: {meetingId : meetingId}});
-
-
-            const userMeeting = await models.UserMeetings.findOne({where: {
-                [Op.and]: [
-                    {
-                        UserId:{
-                            [Op.eq]: userId
-                        }
-                    },
-                    {
-                        MeetingId:{
-                            [Op.eq]: meetingId
-                        }
-                    }
-                ]
-            }})
-
+            const users = await models.UserMeeting.findAll({where: {meetingId : meetingId}});
 
             await userMeeting.destroy();
             if (users.length > 1) {return true}

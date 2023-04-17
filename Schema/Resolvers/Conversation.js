@@ -45,26 +45,6 @@ const ConversationResolvers = {
         deleteConversation: async (_, {conversationId, userId}, ctx) =>{
             const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
 
-            if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"])
-            || ((await models.UserConversations.findOne({where: {
-                [Op.and]: [
-                    {
-                        UserId:{
-                            [Op.eq]: user.id
-                        }
-                    },
-                    {
-                        ConversationId:{
-                            [Op.eq]: conversationId
-                        }
-                    }
-                ]
-            }})) === null))
-                throw Error("You do not have rights")
-
-            const users = await models.UserConversations.findAll({where: {ConversationId : conversationId}});
-
-
             const userConversation = await models.UserConversations.findOne({where: {
                 [Op.and]: [
                     {
@@ -73,17 +53,22 @@ const ConversationResolvers = {
                         }
                     },
                     {
-                        ConversationId:{
-                            [Op.eq]: conversationId
+                        MeetingId:{
+                            [Op.eq]: meetingId
                         }
                     }
                 ]
             }})
 
+            if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"])
+            && (userMeeting) === null)
+                throw Error("You do not have rights (basically woman)")
 
-            await userConversation.destroy();
+            const users = await models.UserConversations.findAll({where: {conversationId : conversationId}});
+
+            await UserConversations.destroy();
             if (users.length > 1) {return true}
-            await models.Conversations.destroy({where: {id: conversationId}})
+            await models.UserConversations.destroy({where: {id: conversationId}})
             return true
         }
     },
