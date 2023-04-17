@@ -18,7 +18,7 @@ const {ConversationTypes} = require(`./Schema/TypeDefs/Conversation`)
 const { UserResolvers } = require('./Schema/Resolvers/User');
 const { PostResolvers } = require('./Schema/Resolvers/Post');
 const {MeetingResolvers} = require('./Schema/Resolvers/Meeting');
-const {LocationResolvers} = require(`./Schema/TypeDefs/Location`)
+const {LocationResolvers} = require(`./Schema/Resolvers/Location`)
 const {ConversationResolvers} = require('./Schema/Resolvers/Conversation')
 
 // defining schema 
