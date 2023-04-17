@@ -70,7 +70,7 @@ const ConversationResolvers = {
 
             await userConversation.destroy();
             if (users.length > 1) {return true}
-            await models.UserConversations.destroy({where: {id: conversationId}})
+            await models.Conversations.destroy({where: {id: conversationId}})
             return true
         }
     },
