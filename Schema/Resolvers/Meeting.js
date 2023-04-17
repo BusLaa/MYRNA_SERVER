@@ -217,8 +217,8 @@ const MeetingResolvers = {
     },
     Meeting:{
         type: async (meeting) =>{
-            const meetingType =await  models.Meeting.findOne({where: {id: meeting.id}});
-            return (await models.MeetingType.findOne({where:{id : meetingType.id}})).name;
+            const meetingObj =await  models.Meeting.findOne({where: {id: meeting.id}});
+            return (await models.MeetingType.findOne({where:{id : meetingObj.typeId}})).name;
         },
         members: async (meeting) => {
             return models.UserMeeting.findAll({where: {meetingId: meeting.id}})
