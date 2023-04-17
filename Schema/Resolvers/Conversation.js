@@ -8,7 +8,7 @@ const getUserRoles = async (userId ) =>{
     return resp
 }
 
-const LocationResolvers = {
+const ConversationResolvers = {
     Query: {
         getAllConversations: async (_, )=>{
             return models.Conversations.findAll()
@@ -23,12 +23,16 @@ const LocationResolvers = {
             } catch {
                 throw Error("You do not have rights")   
             }
+            console.log(name)
+            console.log(idea)
             const createdConversation = await sequelize.transaction(async (t) =>{
                 const conversation = await models.Conversations.create({
                     name: name,
                     idea: idea,
                     expandable: expandable
                 }, {transaction: t});
+
+                console.log(conversation)
 
                 await models.UserConversations.create({
                     UserId: user.id,
@@ -48,4 +52,4 @@ const LocationResolvers = {
 
 
 }
-module.exports = {LocationResolvers}
+module.exports = {ConversationResolvers }
