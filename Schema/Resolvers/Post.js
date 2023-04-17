@@ -1,5 +1,3 @@
-const queryTool = require('../../tools/QueryTool')
-const {pool} = require("../../connector");
 const {verify, sign} = require ('jsonwebtoken');
 const {isRolesInUser} = require('../../tools/FindUserRolesTool');
 

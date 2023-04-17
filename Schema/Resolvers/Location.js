@@ -1,5 +1,3 @@
-const LocationQueries = require('../../queries/LocationQueries');
-
 const sequelize = require("../../connector").sequelize;
 const models = sequelize.models;
 
