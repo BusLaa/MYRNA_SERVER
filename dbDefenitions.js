@@ -319,7 +319,7 @@ const defineData = async (seq) => {
     Rating.belongsTo(Place, {foreignKey: 'PlaceId'})
     Rating.belongsTo(User, {foreignKey: 'UserId'})
 
-    const Conversation = seq.define('conversations',{
+    const Conversation = seq.define('Conversations',{
         id :{
             type: DataTypes.INTEGER,
             autoIncrement: true,
@@ -343,7 +343,7 @@ const defineData = async (seq) => {
     Conversation.belongsToMany(User, {as: 'Conversations', through: 'UserConversations', foreignKey: 'ConversationId'})
     User.belongsToMany(Conversation, {as: 'Users', through: 'UserConversations', foreignKey: 'UserId'})
 
-    const ConversationMessage = seq.define('conversationMsg',{
+    const ConversationMessage = seq.define('ConversationMsg',{
         id :{
             type: DataTypes.INTEGER,
             primaryKey: true,
