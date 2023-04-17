@@ -21,7 +21,7 @@ const ConversationTypes = gql`
     }
     type Mutation {
         createConversation(name: String!, idea: String, expandable: Boolean): Conversation!
-
+        deleteConversation(conversationId: Int!, userId: Int!) : Boolean!
     }
     
 `
