@@ -13,7 +13,8 @@ const ConversationTypes = gql`
         id: Int!,
         conversation: Conversation!,
         reference: ConversationMessage,
-        author: User!
+        author: User!,
+        content: String!
     }
     type Query {
         getAllConversations: [Conversation]
