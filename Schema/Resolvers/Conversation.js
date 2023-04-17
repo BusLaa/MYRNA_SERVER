@@ -1,4 +1,6 @@
 const {verify} = require ('jsonwebtoken');
+
+const { Op } = require("sequelize");
 const sequelize = require("../../connector").sequelize;
 const models = sequelize.models;
 
