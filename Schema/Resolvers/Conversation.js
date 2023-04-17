@@ -75,7 +75,12 @@ const ConversationResolvers = {
         }
     },
     Conversation: {
-        
+        members: async (conversation) => {
+            return models.UserConversations.findAll({where: {conversationId: conversation.id}})
+        },
+        messages: async (conversation) => {
+            return models.ConversationMsg.findAll({where: {conversationId: conversation.id}})
+        }
     },
 
 
