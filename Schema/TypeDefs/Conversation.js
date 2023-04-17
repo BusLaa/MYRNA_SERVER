@@ -4,7 +4,9 @@ const ConversationTypes = gql`
     type Conversation {
         id: Int!,
         expandable: Boolean!,
-        users: [User]!
+        users: [User]!,
+        name: String!,
+        idea: String!
     }
     type ConversationMessage {
         id: Int!,
