@@ -216,7 +216,7 @@ const MeetingResolvers = {
             return models.PlaceMeetings.findAll({where: {MeetingId: meeting.id}})
         },
         chief: async (meeting) =>{
-            return (await models.Meeting.findOne({where: {id: meeting.id}})).chief
+            return {id :(await models.Meeting.findOne({where: {id: meeting.id}})).chief}
         },
         messages: async (meeting) => {
             return models.MeetingMsg.findAll({where: {meetingId: meeting.id}})
