@@ -219,7 +219,7 @@ const defineData = async (seq) => {
     Meeting.belongsTo(User, {foreignKey: "creator"})
     Meeting.belongsTo(User, {foreignKey: "chief"})
 
-    const meetingMsg = seq.define('meetingMsg',{
+    const meetingMsg = seq.define('MeetingMsg',{
         id :{
             type: DataTypes.INTEGER,
             primaryKey: true,
