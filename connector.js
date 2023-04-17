@@ -36,6 +36,7 @@ sequelize.authenticate().then(() => {
   console.log("All models were synchronized successfully.");
 }).then(() =>{
   const Role = sequelize.models.Role
+  const MeetingTypes = sequelize.models.MeetingType
   console.log(sequelize.models)
   setTimeout(()=>{
     Role.findOrCreate({
@@ -54,6 +55,24 @@ sequelize.authenticate().then(() => {
                 name: "USER"
             }
         })
+    }).then(() =>{
+      MeetingTypes.findOrCreate({
+          where:{
+              name: "Hang out"
+          }
+      })
+    }).then(() =>{
+      MeetingTypes.findOrCreate({
+          where:{
+              name: "business"
+          }
+      })
+    }).then(() =>{
+      MeetingTypes.findOrCreate({
+          where:{
+              name: "date"
+          }
+      })
     })
   }, 2000)
   
