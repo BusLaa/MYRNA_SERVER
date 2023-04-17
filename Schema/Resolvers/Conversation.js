@@ -19,7 +19,6 @@ const ConversationResolvers = {
             let user;
             try{
                 user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
-                if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"])) throw Error("You do not have rights")
             } catch {
                 throw Error("You do not have rights")   
             }
