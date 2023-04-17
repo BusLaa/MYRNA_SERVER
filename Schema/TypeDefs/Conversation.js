@@ -10,6 +10,16 @@ const ConversationTypes = gql`
         id: Int!,
         conversation: Conversation!,
         reference: ConversationMessage,
+        author: User!
+    }
+    type Query {
+        getAllConversations: [Conversation]
+        getUserConversations(id: Int!): [Conversation] 
+
+    }
+    type Mutation {
+        createConversation(name: String!, idea: String, expandable: Boolean): Conversation!
+
     }
     
 `

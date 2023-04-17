@@ -319,6 +319,50 @@ const defineData = async (seq) => {
     Rating.belongsTo(Place, {foreignKey: 'PlaceId'})
     Rating.belongsTo(User, {foreignKey: 'UserId'})
 
+    const Conversation = seq.define('conversations',{
+        id :{
+            type: DataTypes.INTEGER,
+            autoIncrement: true,
+            primaryKey: true
+        },
+        expandable:{
+            type: DataTypes.BOOLEAN,
+            defaultValue: true
+        },
+        name: {
+            type: DataTypes.STRING,
+            allowNull: false
+        },
+        idea: {
+            type: DataTypes.STRING,
+            allowNull: false
+        },
+
+    })
+
+    Conversation.belongsToMany(User, {as: 'Conversations', through: 'UserConversations', foreignKey: 'ConversationId'})
+    User.belongsToMany(Conversation, {as: 'Users', through: 'UserConversations', foreignKey: 'UserId'})
+
+    const ConversationMessage = seq.define('conversationMsg',{
+        id :{
+            type: DataTypes.INTEGER,
+            primaryKey: true,
+            autoIncrement: true
+        },
+        content: {
+            type: DataTypes.TEXT,
+            allowNull: false
+        },
+        status: {
+            type: DataTypes.STRING
+        }
+    })
+
+    ConversationMessage.belongsTo(User, {foreignKey: 'authorId'})
+    ConversationMessage.belongsTo(Conversation, {foreignKey: 'conversationId'})
+    ConversationMessage.belongsTo(ConversationMessage, {foreignKey : 'referenceMsgId'})
+
+
     
 
 

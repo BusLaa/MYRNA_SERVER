@@ -19,7 +19,8 @@ const UserTypes = gql`
         comments: [Comment]
         roles: [Role],
         meetings: [Meeting],
-        likedPosts: [Post]
+        likedPosts: [Post],
+        conversations: [Conversation]
     }
     type AuthPayload {
         token: String!

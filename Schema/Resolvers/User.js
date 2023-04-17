@@ -247,7 +247,10 @@ const UserResolvers = {
         },
         birthday: async(user)=>{
             return (await models.User.findOne({where: {id: user.id}})).birthday || "NO DATA"
-        }
+        },
+        conversations: async (user) => {
+            return (await models.User.findOne({where: {id: user.id}, include: 'Conversations'})).Conversations
+        },
     },
     
 }
