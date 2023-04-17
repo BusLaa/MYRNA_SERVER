@@ -1,3 +1,4 @@
+const {verify} = require ('jsonwebtoken');
 const sequelize = require("../../connector").sequelize;
 const models = sequelize.models;
 
@@ -10,28 +11,25 @@ const getUserRoles = async (userId ) =>{
 
 const ConversationResolvers = {
     Query: {
-        getAllConversations: async (_, )=>{
+        getAllConversations: async (_,__ , ctx)=>{
             return models.Conversations.findAll()
         },
     },
     Mutation:{
-        createConversation: async (_, {name, idea, expandable}) =>{
+        createConversation: async (_, {name, idea, expandable}, ctx) =>{
             let user;
             try{
                 user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
             } catch {
                 throw Error("You do not have rights")   
             }
-            console.log(name)
-            console.log(idea)
+            console.log(user.id)
             const createdConversation = await sequelize.transaction(async (t) =>{
                 const conversation = await models.Conversations.create({
                     name: name,
                     idea: idea,
                     expandable: expandable
                 }, {transaction: t});
-
-                console.log(conversation)
 
                 await models.UserConversations.create({
                     UserId: user.id,
