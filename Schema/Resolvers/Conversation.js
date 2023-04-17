@@ -68,7 +68,7 @@ const ConversationResolvers = {
 
             const users = await models.UserConversations.findAll({where: {conversationId : conversationId}});
 
-            await UserConversations.destroy();
+            await userConversation.destroy();
             if (users.length > 1) {return true}
             await models.UserConversations.destroy({where: {id: conversationId}})
             return true
