@@ -55,8 +55,8 @@ const ConversationResolvers = {
                         }
                     },
                     {
-                        MeetingId:{
-                            [Op.eq]: meetingId
+                        ConversationId:{
+                            [Op.eq]: conversationId
                         }
                     }
                 ]
