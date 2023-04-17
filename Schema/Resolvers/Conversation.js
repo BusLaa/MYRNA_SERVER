@@ -15,9 +15,6 @@ const LocationResolvers = {
         },
     },
     Mutation:{
-        
-    },
-    Conversation: {
         createConversation: async (_, {name, idea, expandable}) =>{
             let user;
             try{
@@ -44,6 +41,9 @@ const LocationResolvers = {
             return createdConversation;
 
         }
+    },
+    Conversation: {
+        
     },
 
 
