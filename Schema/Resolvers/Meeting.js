@@ -213,7 +213,7 @@ const MeetingResolvers = {
             return (await models.Meeting.findOne({where: {id: meeting.id}})).creator
         },
         places: async (meeting) => {
-            return models.PlaceMeeting.findAll({where: {MeetingId: meeting.id}})
+            return models.PlaceMeetings.findAll({where: {MeetingId: meeting.id}})
         },
         chief: async (meeting) =>{
             return (await models.Meeting.findOne({where: {id: meeting.id}})).chief
