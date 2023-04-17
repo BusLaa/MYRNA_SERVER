@@ -196,21 +196,7 @@ const MeetingResolvers = {
 
             userMeeting.important = !userMeeting.important
 
-            await models.UserMeeting.update(userMeeting, {where:{
-                    [Op.and]: [
-                        {
-                            UserId:{
-                                [Op.eq]: userId
-                            }
-                        },
-                        {
-                            MeetingId:{
-                                [Op.eq]: meetingId
-                            }
-                        }
-                    ]
-                }
-            })
+            await userMeeting.save();
 
             return userMeeting.important
         }
