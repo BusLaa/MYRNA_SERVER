@@ -48,7 +48,7 @@ const MeetingResolvers = {
                 const meeting = await models.Meeting.create({
                     name: name,
                     date: date,
-                    type: type,
+                    typeId: type,
                     creator: creator,
                     status: status,
                     chief: creator
@@ -112,7 +112,7 @@ const MeetingResolvers = {
                 [Op.and]: [
                     {
                         UserId:{
-                            [Op.eq]: user.id
+                            [Op.eq]: userId
                         }
                     },
                     {
