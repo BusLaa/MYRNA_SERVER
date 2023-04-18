@@ -2,6 +2,7 @@ const passwordGenerator = require('../../tools/PasswordGeneratorTool')
 const {verify, sign} = require ('jsonwebtoken');
 const { Where } = require('sequelize/lib/utils');
 const { where } = require('sequelize/lib/sequelize');
+const { Op } = require("sequelize");
 
 const {isRolesInUser} = require('../../tools/FindUserRolesTool')
 
@@ -45,7 +46,7 @@ const UserResolvers = {
         getUsersByName: async (_, {search} ) =>{
             if (search.trim() == "") return [];
             const concated = sequelize.fn('CONCAT', sequelize.col("firstName"),sequelize.col("lastName"),sequelize.col("email"));
-            const searchQuery = {[sequelize.Op.like] : '%'+search.trim().toLowerCase()+'%'}
+            const searchQuery = {[Op.like] : '%'+search.trim().toLowerCase()+'%'}
             const criteria = {
                 where: sequelize.where(concated, searchQuery)
             }
