@@ -334,7 +334,7 @@ const defineData = async (seq) => {
             allowNull: false
         },
         idea: {
-            type: DataTypes.STRING
+            type: DataTypes.STRING(160)
         },
 
     })

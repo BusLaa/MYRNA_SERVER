@@ -11,6 +11,23 @@ const getUserRoles = async (userId ) =>{
     return resp
 }
 
+const getUserConversation = async (conversationId, userId) => {
+    return models.UserConversations.findOne({where: {
+        [Op.and]: [
+            {
+                UserId:{
+                    [Op.eq]: userId
+                }
+            },
+            {
+                ConversationId:{
+                    [Op.eq]: conversationId
+                }
+            }
+        ]
+    }})
+}
+
 const ConversationResolvers = {
     Query: {
         getAllConversations: async (_,__ , ctx)=>{
@@ -47,20 +64,7 @@ const ConversationResolvers = {
         deleteConversation: async (_, {conversationId, userId}, ctx) =>{
             const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
 
-            const userConversation = await models.UserConversations.findOne({where: {
-                [Op.and]: [
-                    {
-                        UserId:{
-                            [Op.eq]: userId
-                        }
-                    },
-                    {
-                        ConversationId:{
-                            [Op.eq]: conversationId
-                        }
-                    }
-                ]
-            }})
+            const userConversation = await getUserConversation(conversationId, userId) 
 
             if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"])
             && (userConversation) === null)
@@ -76,20 +80,7 @@ const ConversationResolvers = {
         createConversationMessage: async (_, {conversationId,authorId, referenceId, content}, ctx) =>{
             const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
 
-            const userConversation = await models.UserConversations.findOne({where: {
-                [Op.and]: [
-                    {
-                        UserId:{
-                            [Op.eq]: user.id
-                        }
-                    },
-                    {
-                        ConversationId:{
-                            [Op.eq]: conversationId
-                        }
-                    }
-                ]
-            }})
+            const userConversation = await getUserConversation(conversationId, user.id) 
 
             if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"])
             && (userConversation) === null){
@@ -110,20 +101,9 @@ const ConversationResolvers = {
         },
         inviteUserToConversation: async (_, {conversationId,userId}, ctx) =>{
             const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
-            const userConversation = await models.UserConversations.findOne({where: {
-                [Op.and]: [
-                    {
-                        UserId:{
-                            [Op.eq]: user.id
-                        }
-                    },
-                    {
-                        ConversationId:{
-                            [Op.eq]: conversationId
-                        }
-                    }
-                ]
-            }})
+
+            
+            const userConversation = await getUserConversation(conversationId, user.id) 
 
             if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"])
             && (userConversation) === null){

@@ -17,7 +17,8 @@ const MeetingTypes = gql`
         id: Int!,
         author: User!,
         referenceMessage: MeetingMessage,
-        content: String!
+        content: String!,
+        createdAt: String
     }
     type Query {
         getAllMeetings: [Meeting]
