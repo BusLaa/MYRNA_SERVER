@@ -1,6 +1,7 @@
 const { ApolloServer } = require("apollo-server-express"); 
 const { ApolloServerPluginDrainHttpServer } = require('apollo-server-core'); 
 const { makeExecutableSchema } = require('@graphql-tools/schema');
+const  socketIO = require('socket.io')
 const express = require("express"); 
 const http = require("http")
 const cors = require('cors')
@@ -30,6 +31,7 @@ const schema = makeExecutableSchema({
 const startApolloServer = async (schema) => { 
     const app = express(); 
     const httpServer = http.createServer(app); 
+    const io = socketIO(httpServer)
     const server = new ApolloServer({ 
         schema,
         plugins: [
@@ -50,6 +52,10 @@ const startApolloServer = async (schema) => {
     server.applyMiddleware({ app, path: '/' }); 
     await httpServer.listen(process.env.PORT || 4000, () => { 
         console.log("Server succesfully started")
+    })
+    io.on("connection", (socket) =>{
+        console.log('A client connected', socket.id)
+        socket.emit("something")
     })
 }
 
