@@ -24,6 +24,10 @@ const ConversationTypes = gql`
     type Mutation {
         createConversation(name: String!, idea: String, expandable: Boolean): Conversation!
         deleteConversation(conversationId: Int!, userId: Int!) : Boolean!
+
+        createConversationMessage(conversationId: Int!,authorId: Int!, referenceId: Int, content: String!) : ConversationMessage!
+
+        deleteConversationMessage(ConversationMessageId: Int!) : Boolean!
     }
     
 `

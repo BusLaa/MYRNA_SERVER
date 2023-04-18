@@ -207,13 +207,13 @@ const MeetingResolvers = {
             return (await models.MeetingType.findOne({where:{id : meetingObj.typeId}})).name;
         },
         members: async (meeting) => {
-            return (await models.UserMeeting.findAll({where: {meetingId: meeting.id}})).map((a) => {id: a})
+            return (await models.UserMeeting.findAll({where: {meetingId: meeting.id}})).map((a) =>{ return {id: a}})
         },
         creator: async (meeting) => {
             return {id : (await models.Meeting.findOne({where: {id: meeting.id}})).creator}
         },
         places: async (meeting) => {
-            return (await models.PlaceMeetings.findAll({where: {MeetingId: meeting.id}})).map((a) => {id: a})
+            return (await models.PlaceMeetings.findAll({where: {MeetingId: meeting.id}})).map((a) =>{ return {id: a}})
         },
         chief: async (meeting) =>{
             return {id :(await models.Meeting.findOne({where: {id: meeting.id}})).chief}
