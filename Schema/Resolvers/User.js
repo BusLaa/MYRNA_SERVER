@@ -44,7 +44,7 @@ const UserResolvers = {
         },
         getUsersByName: async (_, {search} ) =>{
             if (search.trim() == "") return [];
-            const concated = sequelize.fn('CONCAT', sequelize.col("firstName"),Sequelize.col("lastName"),Sequelize.col("email"));
+            const concated = sequelize.fn('CONCAT', sequelize.col("firstName"),sequelize.col("lastName"),sequelize.col("email"));
             const searchQuery = {[sequelize.Op.like] : '%'+search.trim().toLowerCase()+'%'}
             const criteria = {
                 where: sequelize.where(concated, searchQuery)
