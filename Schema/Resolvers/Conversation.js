@@ -128,7 +128,7 @@ const ConversationResolvers = {
     },
     ConversationMessage:{
         author: async (conversationMessage) =>{
-            return await models.User.findOne({id: conversationMessage.authorId})
+            return await models.User.findOne({where{id: conversationMessage.authorId}})
         }
     }
 
