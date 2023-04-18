@@ -140,10 +140,10 @@ const ConversationResolvers = {
     },
     Conversation: {
         members: async (conversation) => {
-            return (await models.UserConversations.findAll({where: {conversationId: conversation.id}})).map((a) =>{ return {id: a}})
+            return (await models.UserConversations.findAll({where: {conversationId: conversation.id}})).map((a) =>{ return {id: a.UserId}})
         },
         messages: async (conversation) => {
-            return (await models.ConversationMsg.findAll({where: {conversationId: conversation.id}})).map((a) =>{ return {id: a}})
+            return (await models.ConversationMsg.findAll({where: {conversationId: conversation.id}})).map((a) =>{ return {id: a.UserId}})
         }
     },
     ConversationMessage:{
