@@ -43,10 +43,21 @@ const UserResolvers = {
 
             return data;
         },
-        getUsersByName: async (_, {search} ) =>{
+        getUsersByName: async (_, {search, includeYourself}, ctx ) =>{
+            const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
             if (search.trim() == "") return [];
             const concated = sequelize.fn('CONCAT', sequelize.col("firstName"),sequelize.col("lastName"),sequelize.col("email"));
-            const searchQuery = {[Op.like] : '%'+search.trim().toLowerCase()+'%'}
+            const searchQuery = {
+                [Op.and] : [
+                    {
+                        [Op.like] : '%'+search.trim().toLowerCase()+'%'
+                    },
+                    {
+                        [Op.not] :[ {id : user.id}]
+                    }
+                ]
+                
+            }
             const criteria = {
                 where: sequelize.where(concated, searchQuery)
             }

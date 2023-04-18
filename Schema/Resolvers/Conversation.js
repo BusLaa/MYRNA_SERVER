@@ -102,7 +102,7 @@ const ConversationResolvers = {
         inviteUserToConversation: async (_, {conversationId,userId}, ctx) =>{
             const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
 
-            
+
             const userConversation = await getUserConversation(conversationId, user.id) 
 
             if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"])
@@ -128,7 +128,7 @@ const ConversationResolvers = {
     },
     ConversationMessage:{
         author: async (conversationMessage) =>{
-            return models.User.findOne({id: conversationMessage.authorId})
+            return await models.User.findOne({id: conversationMessage.authorId})
         }
     }
 
