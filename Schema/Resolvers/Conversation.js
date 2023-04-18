@@ -107,6 +107,35 @@ const ConversationResolvers = {
             return await message;
             
             
+        },
+        inviteUserToConversation: async (_, {conversationId,userId}, ctx) =>{
+            const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
+            const userConversation = await models.UserConversations.findOne({where: {
+                [Op.and]: [
+                    {
+                        UserId:{
+                            [Op.eq]: user.id
+                        }
+                    },
+                    {
+                        ConversationId:{
+                            [Op.eq]: conversationId
+                        }
+                    }
+                ]
+            }})
+
+            if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"])
+            && (userConversation) === null){
+                throw Error("You do not have rights");
+            }
+
+            const userConv = await  models.UserConversations.create({
+                ConversationId: conversationId,
+                UserId: userId,
+            });
+
+            return {id: userConv.UserId};
         }
     },
     Conversation: {

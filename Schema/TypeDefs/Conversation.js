@@ -28,6 +28,8 @@ const ConversationTypes = gql`
         createConversationMessage(conversationId: Int!,authorId: Int!, referenceId: Int, content: String!) : ConversationMessage!
 
         deleteConversationMessage(ConversationMessageId: Int!) : Boolean!
+
+        inviteUserToConversation(conversationId: Int!, userId: Int!) :User!
     }
     
 `
