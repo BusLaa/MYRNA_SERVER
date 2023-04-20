@@ -108,26 +108,18 @@ const PostResolvers = {
         likePost: async (_, {userId, postId})=> {
             
             return sequelize.transaction(async (t) =>{
-                const data = await models.UserLikes.findOne({where: {
-                    [Op.and]: [
-                        {
-                            PostId:{
-                                [Op.eq]: postId
-                            }
-                        },
-                        {
-                            UserId:{
-                                [Op.eq]: userId
-                            }
-                        }
-                    ]
-                }})
+                const data = await models.UserLikes.findOne({where: { PostId: postId, UserId: userId }})
+
+                console.log(data)
+                console.log(postId)
+                console.log(userId)
 
                 if (data === null){
-                    await models.UserLikes.create({
+                    const ul = await models.UserLikes.create({
                         PostId: postId,
                         UserId: userId
-                    })
+                    }).catch((err) => console.error(err))
+                    console.log(ul)
                     return true
                 } else {
                     await data.destroy();
