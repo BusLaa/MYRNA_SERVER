@@ -56,7 +56,13 @@ const startApolloServer = async (schema) => {
     io.on("connection", (socket) =>{
         console.log('A client connected', socket.id)
         socket.emit("something")
+        socket.on("askForRoom", (args) =>{
+            console.log("someone wants a room!, " + JSON.stringify(args))
+            socket.join("conv" + args.conversationId)
+            socket.emit("room", {room: "conv" + args.conversationId})
+        })
     })
+    
 }
 
 startApolloServer(schema);
