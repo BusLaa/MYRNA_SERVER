@@ -8,6 +8,16 @@ const LocationResolvers = {
         },
         getPlaceById: async (_, {placeId}) =>{
             return models.Place.findOne({where: {id: placeId}})
+        },
+        getPlacesByName: async (_, {searchString}) =>{
+            const places = models.Place.findAll({
+                where: {
+                    name : {
+                        [Op.like] : '%'+searchString.trim().toLowerCase()+'%'
+                    }
+                }
+            })
+            return places
         }
     },
     Mutation:{

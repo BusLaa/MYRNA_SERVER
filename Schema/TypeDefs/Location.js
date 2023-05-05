@@ -20,6 +20,7 @@ const LocationTypes = gql`
     type Query{
         getAllPlaces: [Place]
         getPlaceById(place_id: Int!): Place! 
+        getPlacesByName(searchString: String!): [Place]
     }
     type Mutation {
         createLocation(longitude: Float, latitude: Float, country: String! ,city: String!, postalCode: String!, details: String): Location!
