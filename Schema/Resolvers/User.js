@@ -188,7 +188,7 @@ const UserResolvers = {
             if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"]) && user.id !== userId ) throw Error("You do not have rights (basically woman)")
 
             return sequelize.transaction(async (t) =>{
-                const data = await models.UserSubscription.findOne({where: { PostId: postId, UserId: userId }})
+                const data = await models.UserSubscription.findOne({where: { userId: userId, subscribedId: subscribedId }})
 
                 if (data === null){
                     const ul = await models.UserSubscription.create({
