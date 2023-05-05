@@ -79,22 +79,17 @@ const ConversationResolvers = {
         },
         createConversationMessage: async (_, {conversationId,authorId, referenceId, content}, ctx) =>{
             const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
-
             const userConversation = await getUserConversation(conversationId, user.id) 
-
             if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"])
             && (userConversation) === null){
                 throw Error("You do not have rights");
             }
-
             const message = models.ConversationMsg.create({
                 conversationId: conversationId,
                 authorId: authorId,
                 referenceMsgId : referenceId,
                 content : content
             });
-
-
             return await message;
             
             

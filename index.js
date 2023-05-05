@@ -5,6 +5,10 @@ const  socketIO = require('socket.io')
 const express = require("express"); 
 const http = require("http")
 const cors = require('cors')
+
+const sequelize = require("./connector").sequelize;
+const models = sequelize.models;
+
 const PORT = 4000;
 
 
@@ -31,7 +35,7 @@ const schema = makeExecutableSchema({
 const startApolloServer = async (schema) => { 
     const app = express(); 
     const httpServer = http.createServer(app); 
-    const io = socketIO(httpServer)
+    
     const server = new ApolloServer({ 
         schema,
         plugins: [
@@ -53,13 +57,28 @@ const startApolloServer = async (schema) => {
     await httpServer.listen(process.env.PORT || 4000, () => { 
         console.log("Server succesfully started")
     })
-    io.on("connection", (socket) =>{
-        console.log('A client connected', socket.id)
-        socket.emit("something")
-        socket.on("askForRoom", (args) =>{
-            console.log("someone wants a room!, " + JSON.stringify(args))
-            socket.join("conv" + args.conversationId)
-            socket.emit("room", {room: "conv" + args.conversationId})
+    const io = socketIO(httpServer, {
+        cors: {
+            origin: "*"
+      }})
+    io.on("connection", (socket) => {
+        //console.log("Connection established")
+
+        socket.on("askForRoom", (args) => {
+            socket.join("room" + args.conversationId);
+            io.to(socket.id).emit("gotId", "room" + args.conversationId)
+        })
+        socket.on("sentMessage", async (args) => {
+            const message = (await models.ConversationMsg.create({
+                conversationId: args.conversationId,
+                authorId: args.authorId,
+                referenceMsgId : args.referenceId,
+                content : args.content
+            })).toJSON();
+
+            const returnVal = await models.User.findOne({where: {id: message.authorId}})
+            message.author = returnVal.toJSON()
+            io.to("room"+ args.conversationId).emit("newMessage", message);
         })
     })
     
