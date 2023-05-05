@@ -187,15 +187,20 @@ const UserResolvers = {
             const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
             if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"]) && user.id !== userId ) throw Error("You do not have rights (basically woman)")
 
+            return sequelize.transaction(async (t) =>{
+                const data = await models.UserSubscription.findOne({where: { PostId: postId, UserId: userId }})
 
-            const sub = await UserSubscription.create({
-                userId: userId,
-                subscribedId: subscribedId
+                if (data === null){
+                    const ul = await models.UserSubscription.create({
+                        userId: userId,
+                        subscribedId: subscribedId
+                    })
+                    return true
+                } else {
+                    await data.destroy();
+                    return false
+                }
             })
-
-            if (sub === null){
-                throw Error("Didn't subscribed")
-            }
         }
 
         
