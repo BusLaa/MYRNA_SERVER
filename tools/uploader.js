@@ -9,14 +9,14 @@ const storage = multer.diskStorage({
     destination: function (req, file, cb) {
       cb(null, 'public/')
     },
-    filename: function (req, file, cb) {
+    filename: async function (req, file, cb) {
 
         const filename = crypto.randomBytes(16).toString('hex') + file.originalname
-        sequelize.models.image.create({
+        const created = await sequelize.models.image.create({
             path: filename
         })
 
-        req.body.addedFileName = filename;
+        req.body.addedFileName = created;
         
         cb(null, filename)
     }
@@ -28,7 +28,7 @@ const router = express.Router();
 
 router.post('/upload', upload.single('image'),  (req, res) =>{
     console.log(req.body.addedFileName)
-    res.send({path : req.body.addedFileName})
+    res.send(req.body.addedFileName)
 })
 
 module.exports = router
