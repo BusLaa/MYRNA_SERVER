@@ -57,10 +57,10 @@ const defineData = async (seq) => {
         birthday:{
             type: DataTypes.DATE
         },
-        avatar: {
-            type: DataTypes.INTEGER,
-            defaultValue: 5
-        }
+        // avatar: {
+        //     type: DataTypes.INTEGER,
+        //     defaultValue: 5
+        // }
     })
 
     // const Subscription = seq.define('Subscription', {
@@ -310,8 +310,12 @@ const defineData = async (seq) => {
     User.belongsToMany(Image, {through: 'UserImgs', as : "Images"});
     Image.belongsToMany(User, {through: 'UserImgs'});
 
-    User.hasOne(Image, {foreignKey: 'avatar', as : "avatar"})
-    Image.belongsTo(User, {foreignKey : 'avatar'})
+    User.belongsTo(Image, {foreignKey: 'avatarId', as : "avatar"})
+    //Image.belongsTo(User, {foreignKey : 'avatar'})
+
+    Post.belongsToMany(Image, {through: 'PostImgs', as: 'images'})
+    Image.belongsToMany(Post, {through: 'PostImgs'})
+    
 
     // User.hasMany(Comment, {foreignKey: 'AuthorId', as: 'Comments'})
     // Comment.belongsTo(User, {foreignKey: 'AuthorId'})

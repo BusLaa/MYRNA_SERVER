@@ -7,7 +7,8 @@ const PostTypes = gql`
         content: String!
         likes: Int
         comments: [Comment]
-        deleted: Boolean!
+        deleted: Boolean!,
+        images: [Image]
     }
     type Comment {
         id: Int!
