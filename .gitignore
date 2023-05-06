@@ -8,6 +8,8 @@ node_modules/
 dist/
 package-lock.json
 
+public/*
+
 # Compiled Java class files
 *.class
 
