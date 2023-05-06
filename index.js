@@ -56,7 +56,7 @@ const startApolloServer = async (schema) => {
     app.use(cors())
     app.use('/static', express.static('public'))
     server.applyMiddleware({ app, path: '/' }); 
-    await httpServer.listen(process.env.PORT || 4001, () => { 
+    await httpServer.listen(process.env.PORT || 4000, () => { 
         console.log("Server succesfully started")
     })
 
