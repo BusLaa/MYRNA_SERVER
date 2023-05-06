@@ -1,7 +1,7 @@
 const { ApolloServer } = require("apollo-server-express"); 
 const { ApolloServerPluginDrainHttpServer } = require('apollo-server-core'); 
 const { makeExecutableSchema } = require('@graphql-tools/schema');
-const  socketIO = require('socket.io')
+
 const express = require("express"); 
 const http = require("http")
 const cors = require('cors')
@@ -24,7 +24,8 @@ const { UserResolvers } = require('./Schema/Resolvers/User');
 const { PostResolvers } = require('./Schema/Resolvers/Post');
 const {MeetingResolvers} = require('./Schema/Resolvers/Meeting');
 const {LocationResolvers} = require(`./Schema/Resolvers/Location`)
-const {ConversationResolvers} = require('./Schema/Resolvers/Conversation')
+const {ConversationResolvers} = require('./Schema/Resolvers/Conversation');
+const giveSocket = require("./tools/socket");
 
 // defining schema 
 const schema = makeExecutableSchema({ 
@@ -53,34 +54,13 @@ const startApolloServer = async (schema) => {
     await server.start() 
 
     app.use(cors())
+    app.use('/static', express.static('public'))
     server.applyMiddleware({ app, path: '/' }); 
-    await httpServer.listen(process.env.PORT || 4000, () => { 
+    await httpServer.listen(process.env.PORT || 4001, () => { 
         console.log("Server succesfully started")
     })
-    const io = socketIO(httpServer, {
-        cors: {
-            origin: "*"
-      }})
-    io.on("connection", (socket) => {
-        //console.log("Connection established")
 
-        socket.on("askForRoom", (args) => {
-            socket.join("room" + args.conversationId);
-            io.to(socket.id).emit("gotId", "room" + args.conversationId)
-        })
-        socket.on("sentMessage", async (args) => {
-            const message = (await models.ConversationMsg.create({
-                conversationId: args.conversationId,
-                authorId: args.authorId,
-                referenceMsgId : args.referenceId,
-                content : args.content
-            })).toJSON();
-
-            const returnVal = await models.User.findOne({where: {id: message.authorId}})
-            message.author = returnVal.toJSON()
-            io.to("room"+ args.conversationId).emit("newMessage", message);
-        })
-    })
+    giveSocket()
     
 }
 
