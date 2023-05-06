@@ -249,7 +249,7 @@ const UserResolvers = {
         },
         avatar: async (user) =>{
             //return await models.User.findOne({where: {id: user.id}, include: 'userLikes'}).userLikes
-            return (await models.User.findOne({where: {id: user.id}})).avatar
+            return (await models.User.findOne({where: {id: user.id}, include : 'avatar'}) ).avatar
         },
         birthday: async(user)=>{
             return (await models.User.findOne({where: {id: user.id}})).birthday || "NO DATA"
@@ -257,6 +257,9 @@ const UserResolvers = {
         conversations: async (user) => {
             return (await models.User.findOne({where: {id: user.id}, include: 'Conversations'})).Conversations
         },
+        images: async (user) =>{
+            return (await models.User.findOne({where: {id: user.id}, include: 'Images'})).Images
+        }
     },
     
 }

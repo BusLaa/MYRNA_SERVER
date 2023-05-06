@@ -12,7 +12,7 @@ const UserTypes = gql`
         lastName: String!
         birthday: String
         location: Location
-        avatar: Int
+        avatar: Image,
         subscriptions: [User]
         subscribed: [User]
         posts: [Post]
@@ -20,7 +20,8 @@ const UserTypes = gql`
         roles: [Role],
         meetings: [Meeting],
         likedPosts: [Post],
-        conversations: [Conversation]
+        conversations: [Conversation],
+        images: [Image]
     }
     type AuthPayload {
         token: String!

@@ -307,8 +307,14 @@ const defineData = async (seq) => {
     Meeting.belongsToMany(Image, {through: 'MeetingImgs'});
     Image.belongsToMany(Meeting, {through: 'MeetingImgs'});
 
-    User.belongsToMany(Image, {through: 'UserImgs'});
+    User.belongsToMany(Image, {through: 'UserImgs', as : "Images"});
     Image.belongsToMany(User, {through: 'UserImgs'});
+
+    User.hasOne(Image, {foreignKey: 'avatar', as : "avatar"})
+    Image.belongsTo(User, {foreignKey : 'avatar'})
+
+    // User.hasMany(Comment, {foreignKey: 'AuthorId', as: 'Comments'})
+    // Comment.belongsTo(User, {foreignKey: 'AuthorId'})
 
     const Rating = seq.define('rating', {
         rating: {
