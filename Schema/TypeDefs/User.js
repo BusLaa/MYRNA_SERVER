@@ -12,7 +12,7 @@ const UserTypes = gql`
         lastName: String!
         birthday: String
         location: Location
-        avatar: Int!
+        avatar: Int
         subscriptions: [User]
         subscribed: [User]
         posts: [Post]

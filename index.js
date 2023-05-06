@@ -26,6 +26,7 @@ const {MeetingResolvers} = require('./Schema/Resolvers/Meeting');
 const {LocationResolvers} = require(`./Schema/Resolvers/Location`)
 const {ConversationResolvers} = require('./Schema/Resolvers/Conversation');
 const giveSocket = require("./tools/socket");
+const uploader = require('./tools/uploader')
 
 // defining schema 
 const schema = makeExecutableSchema({ 
@@ -55,8 +56,9 @@ const startApolloServer = async (schema) => {
 
     app.use(cors())
     app.use('/static', express.static('public'))
+    app.use(uploader)
     server.applyMiddleware({ app, path: '/' }); 
-    await httpServer.listen(process.env.PORT || 4000, () => { 
+    await httpServer.listen(process.env.PORT || 4002, () => { 
         console.log("Server succesfully started")
     })
 
