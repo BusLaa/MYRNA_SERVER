@@ -18,7 +18,7 @@ const getUserRoles = async (userId ) =>{
 const PostResolvers = { 
     Query: {
         getAllPosts: async () => {
-            return await models.Post.findAll({where: {deleted: false}, order: [['id', 'ASC']]})
+            return await models.Post.findAll({where: {deleted: false}, order: [['id', 'DESC']]})
         },
         getPostById: async (_,{id}) => {
             return await models.Post.findOne({where: {id: id}})
