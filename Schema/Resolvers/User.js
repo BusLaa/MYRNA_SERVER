@@ -252,7 +252,11 @@ const UserResolvers = {
             return (await models.User.findOne({where: {id: user.id}, include : 'avatar'}) ).avatar
         },
         birthday: async(user)=>{
-            return (await models.User.findOne({where: {id: user.id}})).birthday || "NO DATA"
+            const bd = (await models.User.findOne({where: {id: user.id}})).birthday
+            if (!bd){
+                return "NO DATA"
+            }
+            return  bd
         },
         conversations: async (user) => {
             return (await models.User.findOne({where: {id: user.id}, include: 'Conversations'})).Conversations
