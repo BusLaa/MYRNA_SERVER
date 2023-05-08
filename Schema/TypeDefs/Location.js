@@ -15,7 +15,8 @@ const LocationTypes = gql`
         name: String!,
         paradigm: String!,
         location: Location!, 
-        rating: Float
+        rating: Float,
+        images: [Image]
     }
     type Query{
         getAllPlaces: [Place]
