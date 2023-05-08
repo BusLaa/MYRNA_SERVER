@@ -414,8 +414,8 @@ const defineData = async (seq) => {
 
     meetingMsg.belongsTo(Image, {foreignKey: 'imageId', as : 'Image'})
 
-    Place.belongsTo(Image, {foreignKey : 'imageId', as : 'image'})
-    Image.belongsTo(Place)
+    Place.belongsToMany(Image, {through : 'PlaceImgs', as : 'images'})
+    Image.belongsTo(Place, {through : 'PlaceImgs'})
 
     /*
     
