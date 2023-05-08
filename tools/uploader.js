@@ -30,7 +30,7 @@ const router = express.Router();
 
 router.post('/upload', upload.single('image'),  (req, res) =>{
     try{
-      const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
+      const user = verify(req.headers['verify-token'], process.env.SECRET_WORD).user;
     } catch (err) {
       throw Error('You do not have rights')
     }
