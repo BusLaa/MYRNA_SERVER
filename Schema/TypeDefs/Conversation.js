@@ -8,6 +8,7 @@ const ConversationTypes = gql`
         name: String!,
         idea: String!,
         messages: [ConversationMessage]
+
     }
     type ConversationMessage {
         id: Int!,
