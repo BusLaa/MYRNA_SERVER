@@ -232,7 +232,7 @@ const UserResolvers = {
                 {
                     where: {[Op.and] : [ 
                         {id: user.id}, 
-                        sequelize.literal(`Posts.delete = false`)]},
+                        sequelize.literal(`Posts.deleted = false`)]},
                     include: 'Posts',
                      order: [
                         [{model: models.Post, as: 'Posts'}, "id", 'DESC']
