@@ -1,4 +1,8 @@
 const  socketIO = require('socket.io')
+
+const sequelize = require("../connector").sequelize;
+const models = sequelize.models;
+
 const giveSocket = (httpServer) =>{
     const io = socketIO(httpServer, {
         cors: {
