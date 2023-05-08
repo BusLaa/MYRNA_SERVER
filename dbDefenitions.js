@@ -373,7 +373,7 @@ const defineData = async (seq) => {
     User.belongsTo(CornerPlaces, { as : 'cornerPlaces'})
 
     CornerPlaces.belongsTo(Place, {foreignKey: 'placeId', as : 'place'})
-    Place.belongsTo(CornerPlaces, { as : 'cornerPlace'})
+    //Place.belongsTo(CornerPlaces, { as : 'cornerPlace'})
 
     const CornerPost = seq.define('CornerPost', {
         dateAdded :{
@@ -385,7 +385,7 @@ const defineData = async (seq) => {
     User.belongsTo(CornerPost, { as : 'cornerPost'})
 
     CornerPost.belongsTo(Post, {foreignKey: 'postId', as : 'post'})
-    Post.belongsTo(CornerPost, { as : 'corner'})
+    //Post.belongsTo(CornerPost, { as : 'corner'})
 
 
 
