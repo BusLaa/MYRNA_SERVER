@@ -178,6 +178,12 @@ const PostResolvers = {
             },
             images: async(post) =>{
                 return (await models.Post.findOne({where: {id : post.id}, include: 'images'})).images
+            },
+            header: async(post) =>{
+                return (await models.Post.findOne({where: {id : post.id}})).header
+            },
+            content: async(post) =>{
+                return (await models.Post.findOne({where: {id : post.id}})).content
             }
         },
     Comment: {
