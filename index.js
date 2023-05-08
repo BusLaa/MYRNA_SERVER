@@ -35,7 +35,7 @@ const uploader = require('./tools/uploader')
 // defining schema 
 const schema = makeExecutableSchema({ 
     typeDefs:  [ UserTypes , PostTypes, MeetingTypes, LocationTypes, ConversationTypes, ImageTypes, CornerTypes], 
-    resolvers: [ UserResolvers , PostResolvers, MeetingResolvers, LocationResolvers, ConversationResolvers],
+    resolvers: [ UserResolvers , PostResolvers, MeetingResolvers, LocationResolvers, ConversationResolvers, CornerResolvers],
 })
 
 const startApolloServer = async (schema) => { 
