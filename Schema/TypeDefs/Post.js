@@ -14,7 +14,8 @@ const PostTypes = gql`
         id: Int!
         post: Post!
         author: User
-        content: String!
+        content: String!,
+        image: Image
     }
     type Query{
         getPostById(id: Int!): Post
@@ -29,6 +30,7 @@ const PostTypes = gql`
         likePost(userId: Int!,postId: Int! ): Boolean
         deletePost(postId: Int!): Boolean
         deleteComment(commentId: Int!):Boolean
+        addImageToPost(postId: Int!,imageId: Int!):Boolean
         
     }
 `

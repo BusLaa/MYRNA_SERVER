@@ -142,6 +142,20 @@ const PostResolvers = {
 
             models.Comment.update({deleted: true}, {where: {id: commentId}})
             return true;
+        },
+        addImageToPost: async (_, {imageId, postId}, ctx ) =>{
+            const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
+            const user_id = (await models.Post.findOne({where: {id: postId}})).AuthorId
+            if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"]) && user.id != user_id) throw Error("You do not have rights")
+
+            const PostImage = await  models.PostImgs.create({
+                PostId: postId,
+                imageId: imageId 
+            })
+
+            if (PostImage !== null) return true
+
+            throw new Error("something went wrong during addition of image to post")
         }
     },
     Post: {
@@ -157,6 +171,9 @@ const PostResolvers = {
             },
             likes: async (post) =>{
                 return (await models.Post.findOne({where: {id : post.id}})).likes
+            },
+            images: async(post) =>{
+                return (await models.Post.findOne({where: {id : comment.AuthorId}, include: 'image'})).image
             }
         },
     Comment: {
@@ -165,6 +182,9 @@ const PostResolvers = {
             },
             post: async (comment) => {
                 return await (await models.Post.findOne({where :{id : comment.PostId}}))
+            },
+            image: async(comment) =>{
+                return (await models.Comment.findOne({where: {id : comment.AuthorId}, include: 'image'})).image
             }
         }
     }

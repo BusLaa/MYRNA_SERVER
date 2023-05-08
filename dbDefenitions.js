@@ -302,19 +302,11 @@ const defineData = async (seq) => {
     })
 
     Place.belongsToMany(Meeting, {through: 'PlaceMeetings', as: 'Meetings'})
-    Meeting.belongsToMany(Place, {through: 'PlaceMeetings', as: 'Places'})
+    Meeting.belongsToMany(Place, {through: 'PlaceMeetings', as: 'Places'}) 
 
-    Meeting.belongsToMany(Image, {through: 'MeetingImgs'});
-    Image.belongsToMany(Meeting, {through: 'MeetingImgs'});
+    
 
-    User.belongsToMany(Image, {through: 'UserImgs', as : "Images"});
-    Image.belongsToMany(User, {through: 'UserImgs'});
-
-    User.belongsTo(Image, {foreignKey: 'avatarId', as : "avatar"})
-    //Image.belongsTo(User, {foreignKey : 'avatar'})
-
-    Post.belongsToMany(Image, {through: 'PostImgs', as: 'images'})
-    Image.belongsToMany(Post, {through: 'PostImgs'})
+    
     
 
     // User.hasMany(Comment, {foreignKey: 'AuthorId', as: 'Comments'})
@@ -370,6 +362,66 @@ const defineData = async (seq) => {
     ConversationMessage.belongsTo(User, {foreignKey: 'authorId'})
     ConversationMessage.belongsTo(Conversation, {foreignKey: 'conversationId'})
     ConversationMessage.belongsTo(ConversationMessage, {foreignKey : 'referenceMsgId'})
+
+    const CornerPlaces = seq.define('CornerPlace', {
+        dateAdded :{
+            type : DataTypes.DATE
+        }
+    })
+
+    CornerPlaces.belongsTo(User, {foreignKey: 'userId', as : 'user'})
+    User.belongsTo(CornerPlaces, { as : 'cornerPlaces'})
+
+    CornerPlaces.belongsTo(Place, {foreignKey: 'placeId', as : 'place'})
+    Place.belongsTo(CornerPlaces, { as : 'cornerPlace'})
+
+    const CornerPost = seq.define('CornerPost', {
+        dateAdded :{
+            type : DataTypes.DATE
+        }
+    })
+
+    CornerPost.belongsTo(User, {foreignKey: 'userId', as : 'user'})
+    User.belongsTo(CornerPost, { as : 'cornerPost'})
+
+    CornerPost.belongsTo(Post, {foreignKey: 'postId', as : 'post'})
+    Post.belongsTo(CornerPost, { as : 'corner'})
+
+
+
+
+    /*
+    
+    ///////////////////////////////////////////////////Everything that has to do with images
+    
+    */
+    Meeting.belongsToMany(Image, {through: 'MeetingImgs'});
+    Image.belongsToMany(Meeting, {through: 'MeetingImgs'}); //Meeting Image
+
+    User.belongsToMany(Image, {through: 'UserImgs', as : "Images"}); //user images
+    Image.belongsToMany(User, {through: 'UserImgs'});
+
+    User.belongsTo(Image, {foreignKey: 'avatarId', as : "avatar"}) //avatar
+    //Image.belongsTo(User, {foreignKey : 'avatar'})
+
+    Post.belongsToMany(Image, {through: 'PostImgs', as: 'images'}) // post images
+    Image.belongsToMany(Post, {through: 'PostImgs'})
+
+
+    Conversation.belongsTo(Image, {foreignKey: 'imageId', as : 'Image'})
+    //Image.belongsTo(ConversationMessage, {as : 'Posts'})
+    ConversationMessage.belongsTo(Image, {foreignKey: 'imageId', as : 'Image'}) //conversationMessage image
+
+    meetingMsg.belongsTo(Image, {foreignKey: 'imageId', as : 'Image'})
+
+    Place.belongsTo(Image, {foreignKey : 'imageId', as : 'image'})
+    Image.belongsTo(Place)
+
+    /*
+    
+    ///////////////////////////////////////////////////
+    
+    */
 
 
     
