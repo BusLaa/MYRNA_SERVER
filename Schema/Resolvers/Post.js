@@ -185,6 +185,9 @@ const PostResolvers = {
             content: async(post) =>{
                 return (await models.Post.findOne({where: {id : post.id}})).content
             },
+            deleted: async(post) =>{
+                return (await models.Post.findOne({where: {id : post.id}})).deleted
+            },
            //isPostLikedByUser: async(post)
         },
     Comment: {
