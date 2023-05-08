@@ -21,7 +21,8 @@ const UserTypes = gql`
         meetings: [Meeting],
         likedPosts: [Post],
         conversations: [Conversation],
-        images: [Image]
+        images: [Image],
+        corner: Corner
     }
     type AuthPayload {
         token: String!

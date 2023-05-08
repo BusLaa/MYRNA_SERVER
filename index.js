@@ -19,6 +19,7 @@ const { MeetingTypes } = require('./Schema/TypeDefs/Meeting');
 const {LocationTypes} = require(`./Schema/TypeDefs/Location`)
 const {ConversationTypes} = require(`./Schema/TypeDefs/Conversation`)
 const {ImageTypes} = require(`./Schema/TypeDefs/Image`)
+const {CornerTypes} = require(`./Schema/TypeDefs/Corner`)
 
 //importing resolvers 
 const { UserResolvers } = require('./Schema/Resolvers/User');
@@ -26,13 +27,14 @@ const { PostResolvers } = require('./Schema/Resolvers/Post');
 const {MeetingResolvers} = require('./Schema/Resolvers/Meeting');
 const {LocationResolvers} = require(`./Schema/Resolvers/Location`)
 const {ConversationResolvers} = require('./Schema/Resolvers/Conversation');
+const {CornerResolvers} = require('./Schema/Resolvers/Corner');
 //const {ImageResolvers} = require(`./Schema/TypeDefs/Image`)
 const giveSocket = require("./tools/socket");
 const uploader = require('./tools/uploader')
 
 // defining schema 
 const schema = makeExecutableSchema({ 
-    typeDefs:  [ UserTypes , PostTypes, MeetingTypes, LocationTypes, ConversationTypes, ImageTypes], 
+    typeDefs:  [ UserTypes , PostTypes, MeetingTypes, LocationTypes, ConversationTypes, ImageTypes, CornerTypes], 
     resolvers: [ UserResolvers , PostResolvers, MeetingResolvers, LocationResolvers, ConversationResolvers],
 })
 

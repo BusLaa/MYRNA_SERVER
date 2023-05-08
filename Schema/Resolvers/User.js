@@ -185,7 +185,7 @@ const UserResolvers = {
 
             const UserSubscription = models.UserSubscription;
             const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
-            if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"]) && user.id !== userId ) throw Error("You do not have rights (basically woman)")
+            if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"]) && user.id !== userId ) throw Error("You do not have rights")
 
             return sequelize.transaction(async (t) =>{
                 const data = await models.UserSubscription.findOne({where: { userId: userId, subscribedId: subscribedId }})
@@ -264,6 +264,12 @@ const UserResolvers = {
         },
         images: async (user) =>{
             return (await models.User.findOne({where: {id: user.id}, include: 'Images'})).Images
+        },
+        corner: async(user) =>{
+            const corner = {posts : [], places: []};
+            corner.posts = await models.CornerPost.findAll({where: {userId : user.id}});
+            corner.places = await models.CornerPlaces.findAll({where: {userId : user.id}});
+
         }
     },
     
