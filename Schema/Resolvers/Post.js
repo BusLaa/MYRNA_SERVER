@@ -160,6 +160,9 @@ const PostResolvers = {
         }
     },
     Post: {
+            id: async (post)=>{
+                return post.id
+            },
             comments: async  (post) => {
                 return (await models.Post.findOne({where: {id : post.id}, include: "Comments"})).Comments
                 .map((com) => {
