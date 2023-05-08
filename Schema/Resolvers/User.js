@@ -225,7 +225,7 @@ const UserResolvers = {
             return (await models.User.findOne({where: {id: user.id}, include: 'Subscribed'})).Subscribed
         },
         posts: async  (user) => {
-            return (await models.User.findOne({where: {id: user.id}, include: 'Posts', order: [[models.Post, "id", 'DESC']]})).Posts
+            return (await models.User.findOne({where: {id: user.id}, include: 'Posts', order: [[{model: models.Post}, "id", 'DESC']]})).Posts
         },
         comments: async  (user) => {
             return (await models.User.findOne({where: {id: user.id}, include: 'Comments'})).Comments
