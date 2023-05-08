@@ -18,7 +18,7 @@ const getUserRoles = async (userId ) =>{
 const PostResolvers = { 
     Query: {
         getAllPosts: async () => {
-            return await models.Post.findAll({where: {deleted: false}, order: [['id', 'DESC']]})
+            return await models.Post.findAll({where: {deleted: false}, order: [['id', 'ASC']]})
         },
         getPostById: async (_,{id}) => {
             return await models.Post.findOne({where: {id: id}})
@@ -184,7 +184,8 @@ const PostResolvers = {
             },
             content: async(post) =>{
                 return (await models.Post.findOne({where: {id : post.id}})).content
-            }
+            },
+           //isPostLikedByUser: async(post)
         },
     Comment: {
             author: async  (comment) => {
