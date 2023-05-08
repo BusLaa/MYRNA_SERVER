@@ -17,6 +17,9 @@ const getUserRoles = async (userId ) =>{
 
 const UserResolvers = { 
     Query: { 
+        // me: async (_,__, ctx) => {
+
+        // }
         getAllUsers: async (_,__, ctx) => {
             try{
                 const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
@@ -227,7 +230,7 @@ const UserResolvers = {
         posts: async  (user) => {
             return (await models.User.findOne(
                 {
-                    where: {id: user.id},
+                    where: {id: user.id, deleted : false},
                     include: 'Posts',
                      order: [
                         [{model: models.Post, as: 'Posts'}, "id", 'DESC']
