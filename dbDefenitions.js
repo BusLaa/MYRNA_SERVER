@@ -395,8 +395,8 @@ const defineData = async (seq) => {
     ///////////////////////////////////////////////////Everything that has to do with images
     
     */
-    Meeting.belongsToMany(Image, {through: 'MeetingImgs'});
-    Image.belongsToMany(Meeting, {through: 'MeetingImgs'}); //Meeting Image
+    Meeting.belongsTo(Image, {foreignKey: 'imageId', as :'image'});
+    //Image.belongsToMany(Meeting, {through: 'MeetingImgs'}); //Meeting Image
 
     User.belongsToMany(Image, {through: 'UserImgs', as : "Images"}); //user images
     Image.belongsToMany(User, {through: 'UserImgs'});

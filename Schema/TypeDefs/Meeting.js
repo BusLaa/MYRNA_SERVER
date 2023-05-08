@@ -11,7 +11,8 @@ const MeetingTypes = gql`
         chief: User!,
         places: [Place],
         members: [User],
-        messages: [MeetingMessage]
+        messages: [MeetingMessage],
+        image: Image
     }
     type MeetingMessage {
         id: Int!,

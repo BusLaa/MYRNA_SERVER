@@ -220,6 +220,9 @@ const MeetingResolvers = {
         },
         messages: async (meeting) => {
             return models.MeetingMsg.findAll({where: {meetingId: meeting.id}})
+        },
+        image: async (meeting) =>{
+            return (await models.Meeting.findOne({where: {meetingId: meeting.id}, include: "image"})).image
         }
     }
 }
