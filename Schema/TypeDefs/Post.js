@@ -9,7 +9,9 @@ const PostTypes = gql`
         comments: [Comment]
         deleted: Boolean!,
         images: [Image],
-        isPostLikedByUser: Boolean
+        isLiked: Boolean,
+        isCornered: Boolean
+
     }
     type Comment {
         id: Int!

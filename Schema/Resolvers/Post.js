@@ -188,6 +188,24 @@ const PostResolvers = {
             deleted: async(post) =>{
                 return (await models.Post.findOne({where: {id : post.id}})).deleted
             },
+            isLiked: async(post, _, ctx) =>{
+                try{
+                    const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
+                    const data = await models.UserLikes.findOne({where: {UserId: user.id, PostId: post.id}})
+                    return !!data
+                } catch (err) {
+                    return null
+                }
+            },
+            isCornered: async(post, _, ctx) =>{
+                try{
+                    const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
+                    const data = await models.CornerPost.findOne({where: {userId: user.id, postId: post.id}})
+                    return !!data
+                } catch (err) {
+                    return null
+                }
+            }
            //isPostLikedByUser: async(post)
         },
     Comment: {
