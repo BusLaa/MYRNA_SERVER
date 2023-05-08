@@ -269,7 +269,7 @@ const UserResolvers = {
             const corner = {posts : [], places: []};
             corner.posts = await models.CornerPost.findAll({where: {userId : user.id}});
             corner.places = await models.CornerPlace.findAll({where: {userId : user.id}});
-
+            return corner
         }
     },
     
