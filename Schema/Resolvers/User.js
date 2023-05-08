@@ -129,7 +129,7 @@ const UserResolvers = {
             const auth = {token: token, user: user }
             return auth
         },
-        changeUser: async(_, {userId, email, password,  firstName, lastName, birthday, location}, ctx) =>{
+        changeUser: async(_, {userId, email, password,  firstName, lastName, birthday, location, imageId}, ctx) =>{
             const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
             if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"]) && user.id !== userId ) throw Error("You do not have rights (basically woman)")
 
@@ -145,7 +145,8 @@ const UserResolvers = {
                 firstName: firstName,
                 lastName: lastName,
                 birthday: birthday,
-                location: location 
+                location: location ,
+                avatarId: imageId
             }
             
             await models.User.update(updatedUser, {where : {id : userId}})

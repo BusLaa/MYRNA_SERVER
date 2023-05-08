@@ -46,7 +46,7 @@ const UserTypes = gql`
         signup(email: String!, password: String!, firstName: String!, lastName: String!, locationId: Int, birthday: String): AuthPayload
         signin(email: String!, password: String!): AuthPayload
 
-        changeUser(userId: Int!,email: String, password: String, , firstName: String, lastName: String, birthday: String, location: Int): User
+        changeUser(userId: Int!,email: String, password: String, , firstName: String, lastName: String, birthday: String, location: Int, imageId: Int): User
 
         changeUserRoles(id: Int!, roles: [Int]!): User
         addNewSubscription(userId: Int!, subscribedId: Int!) : Boolean
