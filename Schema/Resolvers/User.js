@@ -267,8 +267,8 @@ const UserResolvers = {
         },
         corner: async(user) =>{
             const corner = {posts : [], places: []};
-            corner.posts = (await models.CornerPost.findAll({where: {userId : user.id}})).map((a) => {return {id: a}});
-            corner.places = (await models.CornerPlace.findAll({where: {userId : user.id}})).map((a) => {return {id: a}});
+            corner.posts = (await models.CornerPost.findAll({where: {userId : user.id}, include: 'post'})).map(a => a.post);
+            corner.places =  (await models.CornerPost.findAll({where: {userId : user.id}, include: 'post'})).map(a => a.place);
             return corner
         }
     },
