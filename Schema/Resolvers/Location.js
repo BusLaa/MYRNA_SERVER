@@ -1,6 +1,8 @@
 const sequelize = require("../../connector").sequelize;
 const models = sequelize.models;
 
+const { Op } = require("sequelize");
+
 const LocationResolvers = {
     Query: {
         getAllPlaces: async () =>{
