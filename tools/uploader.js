@@ -12,7 +12,8 @@ const storage = multer.diskStorage({
     },
     filename: async function (req, file, cb) {
 
-        const filename = crypto.randomBytes(16).toString('hex') + file.originalname.replaceAll(' ', '')
+      console.log(typeof file.originalname)
+        const filename = crypto.randomBytes(16).toString('hex') + file.originalname.replace(/ /g, '')
         const created = await sequelize.models.image.create({
             path: filename
         })
