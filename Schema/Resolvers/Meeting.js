@@ -223,6 +223,15 @@ const MeetingResolvers = {
         },
         image: async (meeting) =>{
             return (await models.Meeting.findOne({where: {meetingId: meeting.id}, include: "image"})).image
+        },
+        isImportant: async (meeting, _, ctx) =>{
+            try{
+                const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
+                const data = await models.UserMeeting.findOne({where: {UserId: user.id, MeetingId: meeting.id}})
+                return !!data
+            } catch (err) {
+                return null
+            }
         }
     }
 }
