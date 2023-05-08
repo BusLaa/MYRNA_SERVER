@@ -60,11 +60,11 @@ const startApolloServer = async (schema) => {
     app.use('/static', express.static('public'))
     app.use(uploader)
     server.applyMiddleware({ app, path: '/' }); 
-    await httpServer.listen(process.env.PORT || 4002, () => { 
+    await httpServer.listen(process.env.PORT || 4000, () => { 
         console.log("Server succesfully started")
     })
 
-    giveSocket()
+    giveSocket(httpServer)
     
 }
 
