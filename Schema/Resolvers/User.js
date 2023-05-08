@@ -230,7 +230,9 @@ const UserResolvers = {
         posts: async  (user) => {
             return (await models.User.findOne(
                 {
-                    where: {id: user.id, deleted : false},
+                    where: {[Op.and] : [ 
+                        {id: user.id}, 
+                        sequelize.literal(`Posts.delete = false`)]},
                     include: 'Posts',
                      order: [
                         [{model: models.Post, as: 'Posts'}, "id", 'DESC']
