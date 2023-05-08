@@ -145,7 +145,8 @@ const PostResolvers = {
         },
         addImageToPost: async (_, {imageId, postId}, ctx ) =>{
             const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
-            const user_id = (await models.Post.findOne({where: {id: postId}})).AuthorId
+            const user_id = (await models.Post.findOne({where: {id: postId}})).Author
+            console.log(user_id)
             if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"]) && user.id != user_id) throw Error("You do not have rights")
 
             const PostImage = await  models.PostImgs.create({
@@ -173,7 +174,7 @@ const PostResolvers = {
                 return (await models.Post.findOne({where: {id : post.id}})).likes
             },
             images: async(post) =>{
-                return (await models.Post.findOne({where: {id : comment.AuthorId}, include: 'image'})).image
+                return (await models.Post.findOne({where: {id : post.id}, include: 'images'})).images
             }
         },
     Comment: {

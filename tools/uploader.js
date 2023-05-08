@@ -29,13 +29,16 @@ const upload = multer({storage: storage})
 const router = express.Router();
 
 router.post('/upload', upload.single('image'),  (req, res) =>{
+  console.log(req.headers)
     try{
+      //console.log(process.env.SECRET_WORD)
+      //console.log(req.headers['verify-token']);
       const user = verify(req.headers['verify-token'], process.env.SECRET_WORD).user;
     } catch (err) {
-      throw Error('You do not have rights')
+      throw Error(err)
     }
     
-    console.log(req.body.addedFileName)
+    //console.log(req.body.addedFileName)
     res.send(req.body.addedFileName)
 })
 
