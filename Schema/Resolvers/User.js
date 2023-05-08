@@ -253,10 +253,11 @@ const UserResolvers = {
         },
         birthday: async(user)=>{
             const bd = (await models.User.findOne({where: {id: user.id}})).birthday
-            if (!bd){
-                return "NO DATA"
+           
+            if ( bd.toString() === "Invalid Date"){
+                return null
             }
-            return  bd
+            return bd
         },
         conversations: async (user) => {
             return (await models.User.findOne({where: {id: user.id}, include: 'Conversations'})).Conversations
