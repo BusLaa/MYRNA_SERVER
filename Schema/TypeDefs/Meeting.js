@@ -26,7 +26,7 @@ const MeetingTypes = gql`
         getAllMeetings: [Meeting]
     }
     type Mutation {
-        createNewMeeting(name: String!,date: String, type: Int, creator: Int!, status: String): Meeting!
+        createNewMeeting(name: String!,date: String, type: Int, creator: Int!, status: String, placeId: Int!): Meeting!
         inviteUserToMeeting(meetingId: Int!, userId: Int!): User
         createMeetingMessage(meetingId: Int!, author: Int!,content: String!, referenceMessageId: Int): MeetingMessage!
         deleteMeeting(meetingId: Int!, userId: Int!) : Boolean!

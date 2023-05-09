@@ -42,7 +42,7 @@ const MeetingResolvers = {
         },
     },
     Mutation: {
-        createNewMeeting: async (_, {name,date, type, creator,status}) => {
+        createNewMeeting: async (_, {name,date, type, creator,status, placeId}) => {
 
             const created = await sequelize.transaction(async (t)=>{
                 const meeting = await models.Meeting.create({
@@ -51,7 +51,8 @@ const MeetingResolvers = {
                     typeId: type,
                     creator: creator,
                     status: status,
-                    chief: creator
+                    chief: creator,
+                    placeId: placeId
                 }, {transaction:t})
     
                 await models.UserMeeting.create({

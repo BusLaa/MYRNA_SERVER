@@ -301,8 +301,8 @@ const defineData = async (seq) => {
         }
     })
 
-    Place.belongsToMany(Meeting, {through: 'PlaceMeetings', as: 'Meetings'})
-    Meeting.belongsToMany(Place, {through: 'PlaceMeetings', as: 'Places'}) 
+    //Place.belongsToMany(Meeting, {through: 'PlaceMeetings', as: 'Meetings'})
+    Meeting.belongsTo(Place, {foreignKey: "placeId", as: 'place'}) 
 
     
 
