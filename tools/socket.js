@@ -23,7 +23,10 @@ const giveSocket = (httpServer) =>{
                 content : args.content
             })).toJSON();
 
-            const returnVal = await models.User.findOne({where: {id: message.authorId}})
+            const returnVal = await models.User.findOne({
+                attributes: ['avatar', 'email', 'firstName', 'lastName', 'id'], 
+                where: {id: message.authorId}, 
+                include :"avatar"})
             message.author = returnVal.toJSON()
             io.to("room"+ args.conversationId).emit("newMessage", message);
         })
