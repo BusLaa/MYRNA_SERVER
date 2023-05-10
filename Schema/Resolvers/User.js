@@ -274,10 +274,10 @@ const UserResolvers = {
             return bd
         },
         conversations: async (user) => {
-            return (await models.User.findOne({where: {id: user.id}, include: 'Conversations'})).conversations
+            return (await models.User.findOne({where: {id: user.id}, include: 'conversations'})).conversations
         },
         images: async (user) =>{
-            return (await models.User.findOne({where: {id: user.id}, include: 'Images'})).Images
+            return (await models.User.findOne({where: {id: user.id}, include: 'images'})).Images
         },
         corner: async(user) =>{
             const corner = {posts : [], places: []};
