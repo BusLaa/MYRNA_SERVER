@@ -26,7 +26,7 @@ const LocationResolvers = {
         createLocation: async (_, {longitude, latitude, country ,city, postalCode, details}) =>{
             
             console.log("qwertyuiop")
-            const loc = await models.location.create({
+            const loc = await models.Location.create({
                 longitude: longitude,
                 latitude: latitude,
                 country: country,
@@ -41,17 +41,17 @@ const LocationResolvers = {
             //return await LocationQueries.getLastLocation()
         },
         deleteLocation: async (_, {locationId}) =>{
-            await models.location.destroy({
+            await models.Location.destroy({
                 id: locationId
             })
         }
     },
     Place: {
         location: (place) => {
-            return models.location.findOne({where: {id: place.locationId}})
+            return models.Location.findOne({where: {id: place.locationId}})
         },
         images: async (place) =>{
-            return (await models.Place.findOne({where :{id: place.id}, include: "images"})).images
+            return (await models.Place.findOne({where :{id: place.id}, include: "Images"})).images
         }
     }
 

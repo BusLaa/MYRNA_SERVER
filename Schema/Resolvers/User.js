@@ -223,10 +223,10 @@ const UserResolvers = {
             return (await models.User.findOne({where: {id: user.id}})).lastName
         },
         subscriptions: async  (user) =>{
-            return (await models.User.findOne({where: {id: user.id}, include: 'Subscriptions'})).Subscriptions
+            return (await models.User.findOne({where: {id: user.id}, include: 'Subscriptions'})).subscriptions
         },
         subscribed: async (user) => {
-            return (await models.User.findOne({where: {id: user.id}, include: 'Subscribed'})).Subscribed
+            return (await models.User.findOne({where: {id: user.id}, include: 'subscribed'})).subscribed
         },
         posts: async  (user) => {
             return (await models.User.findOne(
@@ -238,7 +238,7 @@ const UserResolvers = {
                     ],
                     where: {[Op.and] : [ 
                         {id: user.id}, 
-                        sequelize.literal(`Posts.deleted = false`)]},
+                        {'%Posts.deleted%' :false}]},
                 })).Posts
         },
         comments: async  (user) => {
@@ -259,7 +259,7 @@ const UserResolvers = {
         },
         location: async (user) =>{
             //return await models.User.findOne({where: {id: user.id}, include: 'userLikes'}).userLikes
-            return (await models.location.findOne({where: {id: user.location}}))
+            return (await models.Location.findOne({where: {id: user.location}}))
         },
         avatar: async (user) =>{
             //return await models.User.findOne({where: {id: user.id}, include: 'userLikes'}).userLikes
@@ -274,7 +274,7 @@ const UserResolvers = {
             return bd
         },
         conversations: async (user) => {
-            return (await models.User.findOne({where: {id: user.id}, include: 'Conversations'})).Conversations
+            return (await models.User.findOne({where: {id: user.id}, include: 'Conversations'})).conversations
         },
         images: async (user) =>{
             return (await models.User.findOne({where: {id: user.id}, include: 'Images'})).Images

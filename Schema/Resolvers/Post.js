@@ -60,7 +60,7 @@ const PostResolvers = {
                 where: {
                     [Op.and]:[
                         {
-                            author: [Op.in] (await models.User.findAll({where : {id : id}})).Subscribed
+                            author: [Op.in] (await models.User.findAll({where : {id : id}})).subscribed
                         },
                         {
                             deleted:{
@@ -151,7 +151,7 @@ const PostResolvers = {
 
             const PostImage = await  models.PostImgs.create({
                 PostId: postId,
-                imageId: imageId 
+                ImageId: imageId 
             })
 
             if (PostImage !== null) return true

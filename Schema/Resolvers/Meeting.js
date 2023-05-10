@@ -208,7 +208,7 @@ const MeetingResolvers = {
             return (await models.MeetingType.findOne({where:{id : meetingObj.typeId}})).name;
         },
         members: async (meeting) => {
-            return (await models.Meeting.findOne({where: {meetingId: meeting.id}, include: "Users"})).Users
+            return (await models.Meeting.findOne({where: {meetingId: meeting.id}, include: "Users"})).users
         },
         creator: async (meeting) => {
             return {id : (await models.Meeting.findOne({where: {id: meeting.id}})).creator}
