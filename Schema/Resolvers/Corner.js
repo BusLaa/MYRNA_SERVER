@@ -36,27 +36,41 @@ const CornerResolvers = {
             const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
             if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"]) && user.id !== userId ) throw Error("You do not have rights")
 
-            const cornerPlace = models.CornerPlace.create({
+            const cornerPlace = models.CornerPlace.find({
                 userId: userId,
                 placeId: placeId
             })
 
-            if (!cornerPlace) throw Error("something went wrong when creating corner place")
+            if (!cornerPlace) {
+                models.CornerPlace.create({
+                    userId: userId,
+                    placeId: placeId
+                })
+                return true
+            }
 
-            else return true
+            return false
         } ,
         addPostToCorner: async (_, {userId, postId}, ctx) => {
             const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
             if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"]) && user.id !== userId ) throw Error("You do not have rights")
 
-            const cornerPost = await models.CornerPost.create({
+            const cornerPost = await models.CornerPost.find({
                 userId: userId,
                 postId: postId
             })
-            
-            if (!cornerPost) throw Error("something went wrong when creating corner post")
 
-            else return true
+            
+            if (!cornerPost) {
+                await models.CornerPost.create({
+                    userId: userId,
+                    postId: postId
+                })
+
+                return true;
+            }
+
+            return false
         } 
     }
 }
