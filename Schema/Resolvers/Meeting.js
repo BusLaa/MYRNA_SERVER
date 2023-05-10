@@ -123,7 +123,6 @@ const MeetingResolvers = {
                     }
                 ]
             }})
-            console.log(userMeeting)
 
             if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"])
             && (userMeeting) === null)
