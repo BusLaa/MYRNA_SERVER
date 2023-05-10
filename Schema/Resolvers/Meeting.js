@@ -86,7 +86,7 @@ const MeetingResolvers = {
                     }
                 ]
             }})) === null))
-                throw Error("You do not have rights (basically woman)")
+                throw Error("You do not have rights   ")
 
             try{
                 models.UserMeetings.create({UserId: userId, MeetingId: meetingId})
@@ -126,7 +126,7 @@ const MeetingResolvers = {
 
             if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"])
             && (userMeeting) === null)
-                throw Error("You do not have rights (basically woman)")
+                throw Error("You do not have rights   ")
 
             const users = await models.UserMeeting.findAll({where: {meetingId : meetingId}});
 
@@ -153,7 +153,7 @@ const MeetingResolvers = {
                     }
                 ]
             }})) === null))
-                throw Error("You do not have rights (basically woman)")
+                throw Error("You do not have rights   ")
 
 
             const meeting = models.Meeting.findOne({where : {id : meetingId}})
@@ -170,7 +170,7 @@ const MeetingResolvers = {
 
             if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"])
             || (meeting.chief == user.id))
-                throw Error("You do not have rights (basically woman)")
+                throw Error("You do not have rights   ")
             
             meeting.chief = userId
 
