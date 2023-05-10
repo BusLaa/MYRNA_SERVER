@@ -217,10 +217,10 @@ const UserResolvers = {
             return user.email || (await models.User.findOne({where: {id: user.id}})).email
         },
         firstName: async  (user) => {
-            return (await models.User.findOne({where: {id: user.id}})).firstName
+            return user.firstName || (await models.User.findOne({where: {id: user.id}})).firstName
         },
         lastName: async  (user) => {
-            return (await models.User.findOne({where: {id: user.id}})).lastName
+            return user.lastName || (await models.User.findOne({where: {id: user.id}})).lastName
         },
         subscriptions: async  (user) =>{
             return (await models.User.findOne({where: {id: user.id}, include: 'Subscriptions'})).subscriptions

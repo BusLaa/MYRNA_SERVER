@@ -11,31 +11,20 @@ const models = sequelize.models;
 
 const PORT = 4000;
 
-
 // importing types 
-const { UserTypes } = require('./Schema/TypeDefs/User');
-const { PostTypes } = require('./Schema/TypeDefs/Post');
-const { MeetingTypes } = require('./Schema/TypeDefs/Meeting');
-const {LocationTypes} = require(`./Schema/TypeDefs/Location`)
-const {ConversationTypes} = require(`./Schema/TypeDefs/Conversation`)
-const {ImageTypes} = require(`./Schema/TypeDefs/Image`)
-const {CornerTypes} = require(`./Schema/TypeDefs/Corner`)
+const TypeDefs = require('./Schema/TypeDefs/index')
+
 
 //importing resolvers 
-const { UserResolvers } = require('./Schema/Resolvers/User');
-const { PostResolvers } = require('./Schema/Resolvers/Post');
-const {MeetingResolvers} = require('./Schema/Resolvers/Meeting');
-const {LocationResolvers} = require(`./Schema/Resolvers/Location`)
-const {ConversationResolvers} = require('./Schema/Resolvers/Conversation');
-const {CornerResolvers} = require('./Schema/Resolvers/Corner');
-//const {ImageResolvers} = require(`./Schema/TypeDefs/Image`)
+const Resolvers = require('./Schema/Resolvers/index')
+
 const giveSocket = require("./tools/socket");
 const uploader = require('./tools/uploader')
 
 // defining schema 
 const schema = makeExecutableSchema({ 
-    typeDefs:  [ UserTypes , PostTypes, MeetingTypes, LocationTypes, ConversationTypes, ImageTypes, CornerTypes], 
-    resolvers: [ UserResolvers , PostResolvers, MeetingResolvers, LocationResolvers, ConversationResolvers, CornerResolvers],
+    typeDefs:  TypeDefs, 
+    resolvers: Resolvers,
 })
 
 const startApolloServer = async (schema) => { 

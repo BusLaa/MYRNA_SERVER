@@ -4,6 +4,7 @@ const { PostResolvers } = require('./Post');
 const {MeetingResolvers} = require('./Meeting');
 const {LocationResolvers} = require(`./Location`)
 const {ConversationResolvers} = require('./Conversation');
+const {CornerResolvers} = require('./Corner')
 
 
-module.exports = [ UserResolvers , PostResolvers, MeetingResolvers, LocationResolvers, ConversationResolvers]
+module.exports = [ UserResolvers , PostResolvers, MeetingResolvers, LocationResolvers, ConversationResolvers, CornerResolvers]
