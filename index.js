@@ -14,7 +14,6 @@ const PORT = 4000;
 // importing types 
 const TypeDefs = require('./Schema/TypeDefs/index')
 
-
 //importing resolvers 
 const Resolvers = require('./Schema/Resolvers/index')
 

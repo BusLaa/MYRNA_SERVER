@@ -57,10 +57,6 @@ const defineData = async (seq) => {
         birthday:{
             type: DataTypes.DATE
         },
-        // avatar: {
-        //     type: DataTypes.INTEGER,
-        //     defaultValue: 5
-        // }
     })
 
 
@@ -140,9 +136,6 @@ const defineData = async (seq) => {
     })
 
     User.belongsToMany(Role, {as: 'Roles', through: 'UserRoles'})
-    //Role.belongsToMany(User, {as: 'RoleHolders', through: 'UserRoles'})
-
-    //seq.models.Subscription.create({userId : 10, subscribedId: 12})
 
 
     const MeetingType = seq.define('MeetingType', {
@@ -215,11 +208,6 @@ const defineData = async (seq) => {
     meetingMsg.belongsTo(meetingMsg, {foreignKey : 'referenceMsgId'})
 
 
-
-    
-
-    console.log(seq.models.User)
-
     const Location = seq.define('Location', {
         id: {
             type: DataTypes.INTEGER,
@@ -277,16 +265,8 @@ const defineData = async (seq) => {
         }
     })
 
-    //Place.belongsToMany(Meeting, {through: 'PlaceMeetings', as: 'Meetings'})
     Meeting.belongsTo(Place, {foreignKey: "placeId", as: 'place'}) 
 
-    
-
-    
-    
-
-    // User.hasMany(Comment, {foreignKey: 'AuthorId', as: 'Comments'})
-    // Comment.belongsTo(User, {foreignKey: 'AuthorId'})
 
     const Rating = seq.define('Rating', {
         rating: {
