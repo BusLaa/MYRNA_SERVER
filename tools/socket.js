@@ -9,7 +9,6 @@ const giveSocket = (httpServer) =>{
             origin: "*"
       }})
     io.on("connection", (socket) => {
-        //console.log("Connection established")
 
         socket.on("askForRoom", (args) => {
             socket.join("room" + args.conversationId);

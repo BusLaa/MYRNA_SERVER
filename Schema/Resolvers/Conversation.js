@@ -42,7 +42,6 @@ const ConversationResolvers = {
             } catch {
                 throw Error("You do not have rights")   
             }
-            console.log(user.id)
             const createdConversation = await sequelize.transaction(async (t) =>{
                 const conversation = await models.Conversations.create({
                     name: name,

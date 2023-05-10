@@ -25,7 +25,6 @@ const LocationResolvers = {
     Mutation:{
         createLocation: async (_, {longitude, latitude, country ,city, postalCode, details}) =>{
             
-            console.log("qwertyuiop")
             const loc = await models.Location.create({
                 longitude: longitude,
                 latitude: latitude,
@@ -34,8 +33,6 @@ const LocationResolvers = {
                 postalCode: postalCode,
                 details: details
             })
-
-            console.log(loc)
 
             return loc
             //return await LocationQueries.getLastLocation()

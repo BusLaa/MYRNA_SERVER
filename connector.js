@@ -76,8 +76,7 @@ sequelize.authenticate().then(() => {
       })
     })
   }, 2000)
-  
-  console.log(sequelize.models)
+
 });
 
 

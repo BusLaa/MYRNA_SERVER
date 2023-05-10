@@ -113,7 +113,6 @@ const UserResolvers = {
             
             let user = await User.findOne({where: {email : email}});
 
-            console.log(user)
 
             if (!user ) throw Error('Wrong email or password');
             if (user.length == 0) throw Error('Za rossiu');
@@ -157,8 +156,6 @@ const UserResolvers = {
         },
         changeUserRoles: async(_, { id, roles }, ctx) => {
 
-            console.log(id)
-
             const UserRoles = models.UserRoles;
             const Role = models.Role;
 
@@ -171,8 +168,7 @@ const UserResolvers = {
                         userId: id
                     }
                 }, {transaction: t})
-
-                console.log(roles)
+                
                 for (i of roles){
                     await UserRoles.create({
                         UserId : id ,

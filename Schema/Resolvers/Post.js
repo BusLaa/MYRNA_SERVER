@@ -110,16 +110,11 @@ const PostResolvers = {
             return sequelize.transaction(async (t) =>{
                 const data = await models.UserLikes.findOne({where: { PostId: postId, UserId: userId }})
 
-                console.log(data)
-                console.log(postId)
-                console.log(userId)
-
                 if (data === null){
                     const ul = await models.UserLikes.create({
                         PostId: postId,
                         UserId: userId
                     }).catch((err) => console.error(err))
-                    console.log(ul)
                     return true
                 } else {
                     await data.destroy();
@@ -146,7 +141,6 @@ const PostResolvers = {
         addImageToPost: async (_, {imageId, postId}, ctx ) =>{
             const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
             const user_id = (await models.Post.findOne({where: {id: postId}})).Author
-            console.log(user_id)
             if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"]) && user.id != user_id) throw Error("You do not have rights")
 
             const PostImage = await  models.PostImgs.create({
