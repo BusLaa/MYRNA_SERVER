@@ -12,7 +12,6 @@ const storage = multer.diskStorage({
     },
     filename: async function (req, file, cb) {
 
-      console.log(typeof file.originalname)
         const filename = crypto.randomBytes(16).toString('hex') + file.originalname.replace(/ /g, '')
         const created = await sequelize.models.Image.create({
             path: filename
@@ -29,16 +28,11 @@ const upload = multer({storage: storage})
 const router = express.Router();
 
 router.post('/upload', upload.single('image'),  (req, res) =>{
-  console.log(req.headers)
     try{
-      //console.log(process.env.SECRET_WORD)
-      //console.log(req.headers['verify-token']);
       const user = verify(req.headers['verify-token'], process.env.SECRET_WORD).user;
     } catch (err) {
       throw Error(err)
     }
-    
-    //console.log(req.body.addedFileName)
     res.send(req.body.addedFileName)
 })
 
