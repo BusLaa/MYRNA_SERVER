@@ -232,13 +232,13 @@ const UserResolvers = {
             return (await models.User.findOne(
                 {
                     
-                    include: 'Posts',
+                    include: {
+                        model: models.Post, 
+                        where: {deleted: false}},
                      order: [
                         [{model: models.Post, as: 'Posts'}, "id", 'DESC']
                     ],
-                    where: {[Op.and] : [ 
-                        {id: user.id}, 
-                        {'%Posts.deleted%' :false}]},
+                    where: {id: user.id}
                 })).Posts
         },
         comments: async  (user) => {
