@@ -36,7 +36,7 @@ const CornerResolvers = {
             const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
             if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"]) && user.id !== userId ) throw Error("You do not have rights")
 
-            const cornerPlace = models.CornerPlace.find({
+            const cornerPlace = models.CornerPlace.findOne({
                 userId: userId,
                 placeId: placeId
             })
@@ -55,7 +55,7 @@ const CornerResolvers = {
             const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
             if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"]) && user.id !== userId ) throw Error("You do not have rights")
 
-            const cornerPost = await models.CornerPost.find({
+            const cornerPost = await models.CornerPost.findOne({
                 userId: userId,
                 postId: postId
             })
