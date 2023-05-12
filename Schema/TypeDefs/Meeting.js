@@ -9,7 +9,7 @@ const MeetingTypes = gql`
         status: String,
         creator: User!,
         chief: User!,
-        places: [Place],
+        place: Place!,
         members: [User],
         messages: [MeetingMessage],
         image: Image,
