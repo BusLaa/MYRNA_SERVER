@@ -48,7 +48,7 @@ const LocationResolvers = {
             return models.Location.findOne({where: {id: place.locationId}})
         },
         images: async (place) =>{
-            return (await models.Place.findOne({where :{id: place.id}, include: "Images"})).images
+            return (await models.Place.findOne({where :{id: place.id}, include: "images"})).images
         }
     }
 

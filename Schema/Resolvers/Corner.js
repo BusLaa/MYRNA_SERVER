@@ -43,11 +43,15 @@ const CornerResolvers = {
 
             if (!cornerPlace) {
                 models.CornerPlace.create({
-                    userId: userId,
-                    placeId: placeId
+                    where:{
+                        userId: userId,
+                        placeId: placeId
+                    }
                 })
                 return true
             }
+
+            cornerPlace.destroy();
 
             return false
         } ,
@@ -56,8 +60,10 @@ const CornerResolvers = {
             if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"]) && user.id !== userId ) throw Error("You do not have rights")
 
             const cornerPost = await models.CornerPost.findOne({
-                userId: userId,
-                postId: postId
+                where:{
+                    userId: userId,
+                    postId: postId
+                }
             })
 
             
@@ -69,6 +75,8 @@ const CornerResolvers = {
 
                 return true;
             }
+
+            cornerPost.destroy();
 
             return false
         } 

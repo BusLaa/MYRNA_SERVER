@@ -230,6 +230,7 @@ const UserResolvers = {
                     
                     include: {
                         model: models.Post, 
+                        as : "Posts",
                         where: {deleted: false}},
                      order: [
                         [{model: models.Post, as: 'Posts'}, "id", 'DESC']

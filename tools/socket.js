@@ -22,12 +22,20 @@ const giveSocket = (httpServer) =>{
                 content : args.content
             })).toJSON();
 
-            const returnVal = await models.User.findOne({
-                attributes: ['avatar', 'email', 'firstName', 'lastName', 'id'], 
+            models.User.findOne({
+                attributes: ['email', 'firstName', 'lastName', 'id'], 
                 where: {id: message.authorId}, 
                 include :"avatar"})
-            message.author = returnVal.toJSON()
-            io.to("room"+ args.conversationId).emit("newMessage", message);
+            .then((returnVal) =>{
+                message.author = returnVal.toJSON()
+                io.to("room"+ args.conversationId).emit("newMessage", message);
+            })
+            .catch((err) =>{
+                console.log(err)
+            })
+            
+            
+            
         })
     })
 }
