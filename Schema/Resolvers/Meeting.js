@@ -72,7 +72,7 @@ const MeetingResolvers = {
             const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
 
             if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"])
-            && ((await models.UserMeeting.findOne({where: {
+            || ((await models.UserMeetings.findOne({where: {
                 [Op.and]: [
                     {
                         UserId:{
@@ -86,10 +86,16 @@ const MeetingResolvers = {
                     }
                 ]
             }})) === null))
-                throw Error("You do not have rights")
+                throw Error("You do not have rights   ")
 
-            try {
-                models.UserMeeting.create({UserId: userId, MeetingId: meetingId})
+            
+            if (models.UserMeetings.create({UserId: userId, MeetingId: meetingId})){
+                throw Error("Already exists")
+            }
+            
+
+            try{
+                models.UserMeetings.create({UserId: userId, MeetingId: meetingId})
             } catch (err) {
                 return null
             }
@@ -203,24 +209,17 @@ const MeetingResolvers = {
     },
     Meeting:{
         type: async (meeting) =>{
-            const meetingObj = await models.Meeting.findOne({where: {id: meeting.id}});
+            const meetingObj =await  models.Meeting.findOne({where: {id: meeting.id}});
             return (await models.MeetingType.findOne({where:{id : meetingObj.typeId}})).name;
         },
         members: async (meeting) => {
-            return (await models.Meeting.findOne({where: {meetingId: meeting.id}, 
-                include: {
-                    model: "Users"
-                },
-                 order: [
-                    [{model: models.UserMeeting, as: 'UserMeetings'}, "important", 'DESC']
-                ],
-                include: "Users"})).users
+            return (await models.Meeting.findOne({where: {meetingId: meeting.id}, include: "Users"})).users
         },
         creator: async (meeting) => {
             return {id : (await models.Meeting.findOne({where: {id: meeting.id}})).creator}
         },
-        place: async (meeting) => {
-            return (await models.Meeting.findOne({where: {id: meeting.id}, include: "place"})).place
+        places: async (meeting) => {
+            return (await models.PlaceMeetings.findAll({where: {MeetingId: meeting.id}})).map((a) =>{ return {id: a}})
         },
         chief: async (meeting) =>{
             return {id :(await models.Meeting.findOne({where: {id: meeting.id}})).chief}
@@ -235,15 +234,10 @@ const MeetingResolvers = {
             try{
                 const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
                 const data = await models.UserMeeting.findOne({where: {UserId: user.id, MeetingId: meeting.id}})
-                return !!data.important
+                return !!data
             } catch (err) {
                 return null
             }
-        }
-    },
-    MeetingMessage:{
-        author: async (meetingMessage) =>{
-            return await models.User.findOne({where: {id: meetingMessage.authorId}})
         }
     }
 }
