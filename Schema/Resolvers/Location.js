@@ -44,6 +44,9 @@ const LocationResolvers = {
         }
     },
     Place: {
+        id: (place) =>{
+            return place.id
+        },
         location: (place) => {
             return models.Location.findOne({where: {id: place.locationId}})
         },
