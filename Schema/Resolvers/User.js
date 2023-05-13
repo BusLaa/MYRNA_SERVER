@@ -58,7 +58,7 @@ const UserResolvers = {
             
     },
     Mutation: {
-        signup: async (_,{email, firstName, lastName,password, locationId, birthday}) => {
+        signup: async (_,{email, firstName, lastName,password, locationId, birthday, imageId}) => {
 
 
             
@@ -88,6 +88,7 @@ const UserResolvers = {
                     lastName: lastName,
                     location: locationId,
                     birthday: birthday,
+                    imageId: imageId
                 }, {transaction: t});
 
                 if (user === null) throw Error("User has not been created");
