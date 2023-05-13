@@ -22,8 +22,13 @@ const MeetingTypes = gql`
         content: String!,
         createdAt: String
     }
+    type MeetingType {
+        id: Int!
+        name: String!
+    }
     type Query {
         getAllMeetings: [Meeting]
+        getAllMeetingTypes: [MeetingType]
     }
     type Mutation {
         createNewMeeting(name: String!,date: String, type: Int, creator: Int!, status: String, placeId: Int!): Meeting!
