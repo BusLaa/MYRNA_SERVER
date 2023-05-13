@@ -40,6 +40,9 @@ const MeetingResolvers = {
         getAllMeetings: () =>{
             return models.Meeting.findAll();
         },
+        getAllMeetingTypes: () =>{
+            return models.MeetingType.findAll()
+        }
     },
     Mutation: {
         createNewMeeting: async (_, {name,date, type, creator,status, placeId}) => {
