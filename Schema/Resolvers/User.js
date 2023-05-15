@@ -308,7 +308,7 @@ const UserResolvers = {
             return corner
         },
         placeSubscriptions: async (user) =>{
-            
+            return (await models.User.findOne({where: {id: user.id}, include: 'Places'})).Places
         }
     },
     
