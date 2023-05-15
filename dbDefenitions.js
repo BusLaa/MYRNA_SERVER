@@ -319,7 +319,7 @@ const defineData = async (seq) => {
     })
 
     Conversation.belongsToMany(User, {as: 'users', through: 'UserConversations', foreignKey: 'ConversationId'})
-    User.belongsToMany(Conversation, {as: 'conversations', through: 'UserConversations', foreignKey: 'UserId'})
+    User.belongsToMany(Conversation, {as: 'Conversations', through: 'UserConversations', foreignKey: 'UserId'})
 
     const ConversationMessage = seq.define('ConversationMsg',{
         id :{
