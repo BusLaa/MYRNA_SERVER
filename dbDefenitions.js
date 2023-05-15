@@ -267,6 +267,9 @@ const defineData = async (seq) => {
 
     Place.belongsTo(Location, {foreignKey: 'locationId'})
 
+    Place.belongsToMany(User, {through : "UserPlaces", as : "Users"})
+    User.belongsToMany(Place, {through : "UserPlaces", as : "Places"})
+
     const Image = seq.define('Image', {
         id :{
             type: DataTypes.INTEGER,

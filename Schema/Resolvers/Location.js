@@ -41,6 +41,12 @@ const LocationResolvers = {
             await models.Location.destroy({
                 id: locationId
             })
+        },
+        addNewPlaceSubcription: async (_, {placeId, userId}) =>{
+            await models.UserPlaces.create({
+                placeId: placeId,
+                userId : userId
+            })
         }
     },
     Place: {
