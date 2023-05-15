@@ -44,8 +44,8 @@ const LocationResolvers = {
         },
         addNewPlaceSubscription: async (_, {placeId, userId}) =>{
             await models.UserPlaces.create({
-                placeId: placeId,
-                userId : userId
+                PlaceId: placeId,
+                UserId : userId
             })
         }
     },
