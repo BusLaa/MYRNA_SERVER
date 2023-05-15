@@ -42,7 +42,7 @@ const LocationResolvers = {
                 id: locationId
             })
         },
-        addNewPlaceSubcription: async (_, {placeId, userId}) =>{
+        addNewPlaceSubscription: async (_, {placeId, userId}) =>{
             await models.UserPlaces.create({
                 placeId: placeId,
                 userId : userId
