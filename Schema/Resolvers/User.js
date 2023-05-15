@@ -296,7 +296,7 @@ const UserResolvers = {
             return bd
         },
         conversations: async (user) => {
-            return (await models.User.findOne({where: {id: user.id}, include: 'conversations'})).conversations
+            return (await models.User.findOne({where: {id: user.id}, include: 'Conversations'})).Conversations
         },
         images: async (user) =>{
             return (await models.User.findOne({where: {id: user.id}, include: 'images'})).Images
