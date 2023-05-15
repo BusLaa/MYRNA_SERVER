@@ -44,7 +44,7 @@ const PostResolvers = {
                 where: {
                     [Op.and]:[
                         {
-                            author: [Op.in] (await models.User.findAll({where : {id : id}})).subscribed
+                            author: [Op.in] (await models.User.findAll({where : {id : id}})).subscribed.map(user => user.id)
                         },
                         {
                             deleted:{
