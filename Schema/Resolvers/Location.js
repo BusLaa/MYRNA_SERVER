@@ -44,7 +44,7 @@ const LocationResolvers = {
         },
         addNewPlaceSubscription: async (_, {placeId, userId}) =>{
 
-            const existed = await models.UserPlaces.find({
+            const existed = await models.UserPlaces.findOne({
                 PlaceId: placeId,
                 UserId : userId
             })
