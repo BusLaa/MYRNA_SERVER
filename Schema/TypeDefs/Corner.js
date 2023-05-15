@@ -7,7 +7,7 @@ const CornerTypes = gql`
     }
     type Mutation {
         addPostToCorner(postId: Int!, userId: Int!): Boolean!
-        addPlaceToCorner(postId: Int!, userId: Int!): Boolean!
+        addPlaceToCorner(placeId: Int!, userId: Int!): Boolean!
     }
 `
 
