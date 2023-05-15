@@ -39,22 +39,6 @@ const PostResolvers = {
                 ]}
             })
         },
-        /**
-         ({where:{
-                [Op.and]: [
-                    {
-                        authorId:{
-                            [Op.eq]: id
-                        }
-                    },
-                    {
-                        deleted:{
-                            [Op.eq]: false
-                        }
-                    }
-                ]}
-            })
-         */
         getAllSubscribedPosts: async (_,{id}) =>{
             return models.Post.findAll({
                 where: {
@@ -158,7 +142,7 @@ const PostResolvers = {
                 return post.id
             },
             comments: async  (post) => {
-                return (await models.Post.findOne({where: {id : post.id}, include: "Comments"})).Comments
+                return (await models.Post.findOne({where: {id : post.id , deleted: false}, include: "Comments"})).Comments
                 .map((com) => {
                     if (com.deleted) com.content = "[DELETED]"
                     return com
