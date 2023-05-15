@@ -64,6 +64,12 @@ const UserResolvers = {
 
             }
 
+            if (excludeConversation){
+                where.push({[Op.not] : sequelize.literal (`Conversations.id <> ${excludeConversation} OR Conversations.id IS NULL`)})
+                include = "Conversations"
+
+            }
+
 
             const criteria = {
                 where: where,
