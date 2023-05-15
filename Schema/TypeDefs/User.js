@@ -22,7 +22,8 @@ const UserTypes = gql`
         likedPosts: [Post],
         conversations: [Conversation],
         images: [Image],
-        corner: Corner
+        corner: Corner,
+        placeSubscriptions: [Place]
     }
     type AuthPayload {
         token: String!
@@ -50,6 +51,7 @@ const UserTypes = gql`
 
         changeUserRoles(id: Int!, roles: [Int]!): User
         addNewSubscription(userId: Int!, subscribedId: Int!) : Boolean
+        
 
         
     }
