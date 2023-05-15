@@ -43,10 +43,24 @@ const LocationResolvers = {
             })
         },
         addNewPlaceSubscription: async (_, {placeId, userId}) =>{
+
+            const existed = await models.UserPlaces.find({
+                PlaceId: placeId,
+                UserId : userId
+            })
+
+            if (existed) {
+                existed.destroy()
+                return false
+            }
+
             await models.UserPlaces.create({
                 PlaceId: placeId,
                 UserId : userId
             })
+            return true
+
+
         }
     },
     Place: {
