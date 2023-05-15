@@ -46,10 +46,14 @@ const UserResolvers = {
 
             return data;
         },
-        getUsersByName: async (_, {search, includeYourself} ) =>{
+        getUsersByName: async (_, {search, includeYourself, excludeConversation, excludeMeeting} ) =>{
             if (search.trim() == "") return [];
             const concated = sequelize.fn('CONCAT', sequelize.col("firstName"),sequelize.col("lastName"),sequelize.col("email"));
-            const searchQuery = {[Op.like] : '%'+search.trim().toLowerCase()+'%'}
+            const searchQuery = {[Op.and] : [{[Op.like] : '%'+search.trim().toLowerCase()+'%'}]}
+            if (excludeMeeting){
+                searchQuery.push({[Op.not] : {"Meeting.id" : excludeMeeting}})
+                criteria.include = "Meetings"
+            }
             const criteria = {
                 where: sequelize.where(concated, searchQuery)
             }

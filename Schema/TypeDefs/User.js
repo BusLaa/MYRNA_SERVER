@@ -39,7 +39,7 @@ const UserTypes = gql`
         getAllUsers: [User]
         getUserById(id: Int!): User
         me: User! 
-        getUsersByName(search:String, includeYourself: Boolean): [User]
+        getUsersByName(search:String, includeYourself: Boolean, excludeMeeting: Int, excludeConversation: Int): [User]
 
     }
     type Mutation {
