@@ -59,7 +59,7 @@ const UserResolvers = {
 
             let include = ""
             if (excludeMeeting){
-                where.push({[Op.not] : {"$Meeting.id$" : excludeMeeting}})
+                where.push({[Op.not] : sequelize.literal (`Meeting.id = ${excludeMeeting}`)})
                 include = "Meetings"
 
             }
