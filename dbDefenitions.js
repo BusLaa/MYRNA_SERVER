@@ -117,7 +117,8 @@ const defineData = async (seq) => {
             type: DataTypes.TEXT
         },
         deleted:{
-            type: DataTypes.BOOLEAN
+            type: DataTypes.BOOLEAN,
+            defaultValue: false
         }
     })
 
