@@ -240,6 +240,23 @@ const MeetingResolvers = {
                 return null
             }
         }
+    },
+    MeetingMessage: {
+        id: (meetingMessage) =>{
+            return meetingMessage.id
+        },
+        author: (meetingMessage) =>{
+            return models.User.findOne({where: {id : meetingMessage.authorId}})
+        },
+        referenceMessage: (meetingMessage) =>{
+            return models.MeetingMessage.findOne({where: {id : meetingMessage.referenceMsgId}})
+        },
+        content: async (meetingMessage) =>{
+            return meetingMessage.content || (await models.MeetingMessage.findOne({where : {id : meetingMessage.id}})).content
+        },
+        createdAt: async (meetingMessage) =>{
+            return meetingMessage.createdAt || (await models.MeetingMessage.findOne({where : {id : meetingMessage.id}})).createdAt
+        }
     }
 }
 module.exports = {MeetingResolvers}
