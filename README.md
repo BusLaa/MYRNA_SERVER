@@ -6,6 +6,10 @@ This is server part of MYRNA apllication - social network
 
 myrna requires MYSQL database (all connection parameters is in enviromental varaibles)
 
+node
+
+npm
+
 ## installation
 
 npm i
